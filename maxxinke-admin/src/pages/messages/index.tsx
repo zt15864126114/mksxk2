@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Space, Typography, Tag, message } from 'antd';
 import { EditOutlined, DeleteOutlined, CheckOutlined } from '@ant-design/icons';
 import { messageService, Message } from '../../services/messageService';
+import dayjs from 'dayjs';
 
 const { Title } = Typography;
 
@@ -96,6 +97,7 @@ const MessagesPage: React.FC = () => {
       dataIndex: 'createTime',
       key: 'createTime',
       width: '15%',
+      render: (createTime: string) => dayjs(createTime).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '操作',

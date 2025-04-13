@@ -4,6 +4,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import NewsForm from './components/NewsFormNew';
 import { getNews, createNews, updateNews, deleteNews } from '@/services/newsService';
 import type { News } from '@/services/newsService';
+import dayjs from 'dayjs';
 
 const NewsPage: React.FC = () => {
   const [news, setNews] = useState<News[]>([]);
@@ -116,6 +117,7 @@ const NewsPage: React.FC = () => {
       title: '创建时间',
       dataIndex: 'createTime',
       key: 'createTime',
+      render: (createTime: string) => dayjs(createTime).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '操作',

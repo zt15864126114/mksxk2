@@ -3,6 +3,7 @@ import { Table, Button, Space, Modal, message } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { productService, Product } from '@/services/productService';
 import ProductForm from './components/ProductForm';
+import dayjs from 'dayjs';
 
 const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -125,6 +126,7 @@ const ProductsPage: React.FC = () => {
       title: '创建时间',
       dataIndex: 'createTime',
       key: 'createTime',
+      render: (createTime: string) => dayjs(createTime).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '操作',
