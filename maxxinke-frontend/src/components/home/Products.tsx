@@ -62,31 +62,31 @@ const Products: React.FC = () => {
   const products = [
     {
       id: 1,
-      title: '工业自动化控制系统',
-      description: '采用先进的控制算法，提供高精度、高可靠性的自动化控制解决方案',
+      title: '高效絮凝剂',
+      description: '高效去除水中悬浮物，适用于各类工业废水处理',
       image: '/product1.jpg',
-      category: '自动化控制'
+      category: '水处理产品'
     },
     {
       id: 2,
-      title: '智能传感器系统',
-      description: '高精度传感器，实时监测，数据采集与分析',
+      title: '水泥减水剂',
+      description: '提高水泥性能，有效减少用水量，改善施工性能',
       image: '/product2.jpg',
-      category: '传感器'
+      category: '水泥外加剂'
     },
     {
       id: 3,
-      title: '工业机器人',
-      description: '六轴机器人，适用于各类工业自动化场景',
+      title: 'COD去除剂',
+      description: '专业处理高COD废水，提高出水水质',
       image: '/product3.jpg',
-      category: '机器人'
+      category: '水处理产品'
     },
     {
       id: 4,
-      title: '数据采集系统',
-      description: '工业大数据采集与分析平台，助力智能制造',
+      title: '水泥抑尘剂',
+      description: '有效抑制粉尘，改善工作环境，提高生产效率',
       image: '/product4.jpg',
-      category: '数据采集'
+      category: '水泥外加剂'
     }
   ];
 
@@ -94,7 +94,7 @@ const Products: React.FC = () => {
     <ProductsWrapper>
       <div className="section-title">
         <h2>产品中心</h2>
-        <p>为您提供专业的工业自动化解决方案</p>
+        <p>专业的水处理产品与水泥外加剂解决方案</p>
       </div>
       <Row gutter={[30, 30]}>
         {products.map(product => (

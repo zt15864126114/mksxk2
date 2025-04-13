@@ -1,154 +1,152 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Row, Col, Spin, Typography, Tag, Divider } from 'antd';
+import { Typography, Spin, Tag, Breadcrumb } from 'antd';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { newsService } from '../services/newsService';
-import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
-import './NewsDetail.css';
+import api from '../services/api';
 
 const { Title, Paragraph } = Typography;
 
-const NewsDetailWrapper = styled.div`
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-`;
-
-const MainContent = styled.main`
-  flex: 1;
-  padding: 80px 0;
-  background: #f5f5f5;
-`;
-
-const NewsContainer = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-`;
-
-const NewsImage = styled.img`
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-`;
-
-const NewsContent = styled.div`
-  background: white;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin-top: 30px;
-  
-  .ant-typography {
-    margin-bottom: 20px;
-  }
-  
-  .ant-tag {
-    margin-right: 10px;
-  }
-  
-  .news-meta {
-    color: #666;
-    margin-bottom: 20px;
-    
-    span {
-      margin-right: 20px;
-    }
-  }
-`;
-
-interface News {
+interface NewsItem {
   id: number;
   title: string;
   content: string;
   type: string;
+  image: string;
   createTime: string;
   views: number;
-  image?: string;
 }
+
+const PageWrapper = styled.div`
+  padding: 100px 20px 50px;
+  max-width: 1200px;
+  margin: 0 auto;
+`;
+
+const StyledBreadcrumb = styled(Breadcrumb)`
+  margin-bottom: 24px;
+`;
+
+const ContentWrapper = styled.div`
+  padding: 32px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+`;
+
+const NewsImage = styled.img`
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 24px;
+`;
+
+const NewsMeta = styled.div`
+  margin: 16px 0 24px;
+  color: #999;
+  font-size: 14px;
+  
+  .tag {
+    margin-right: 16px;
+  }
+  
+  .date {
+    margin-right: 16px;
+  }
+`;
+
+const NewsContent = styled.div`
+  font-size: 16px;
+  line-height: 1.8;
+  color: #333;
+  
+  img {
+    max-width: 100%;
+    height: auto;
+    margin: 16px 0;
+  }
+  
+  p {
+    margin-bottom: 16px;
+  }
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+`;
 
 const NewsDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [news, setNews] = useState<News | null>(null);
   const [loading, setLoading] = useState(true);
+  const [news, setNews] = useState<NewsItem | null>(null);
 
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        if (id) {
-          const data = await newsService.getNewsById(parseInt(id));
-          // 确保返回的数据包含所有必需的字段
-          const newsData: News = {
-            ...data,
-            views: data.views || 0,
-            image: data.image || `/news${id}.jpg`
-          };
-          setNews(newsData);
-        }
+        const response = await api.get(`/news/${id}`);
+        setNews(response.data);
       } catch (error) {
-        console.error('Error fetching news:', error);
+        console.error('获取新闻详情失败:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchNews();
+    if (id) {
+      fetchNews();
+    }
   }, [id]);
 
   if (loading) {
     return (
-      <NewsDetailWrapper>
-        <Header />
-        <MainContent>
-          <div style={{ textAlign: 'center', padding: '100px 0' }}>
-            <Spin size="large" />
-          </div>
-        </MainContent>
-        <Footer />
-      </NewsDetailWrapper>
+      <PageWrapper>
+        <LoadingWrapper>
+          <Spin size="large" />
+        </LoadingWrapper>
+      </PageWrapper>
     );
   }
 
   if (!news) {
     return (
-      <NewsDetailWrapper>
-        <Header />
-        <MainContent>
-          <div style={{ textAlign: 'center', padding: '100px 0' }}>
-            <Title level={2}>新闻不存在</Title>
-          </div>
-        </MainContent>
-        <Footer />
-      </NewsDetailWrapper>
+      <PageWrapper>
+        <Title level={3}>新闻不存在</Title>
+        <Link to="/news">返回新闻列表</Link>
+      </PageWrapper>
     );
   }
 
   return (
-    <NewsDetailWrapper>
-      <Header />
-      <MainContent>
-        <NewsContainer>
-          <Row>
-            <Col span={24}>
-              <NewsImage src={news.image} alt={news.title} />
-            </Col>
-          </Row>
-          <NewsContent>
-            <Title level={2}>{news.title}</Title>
-            <div className="news-meta">
-              <Tag color="blue">{news.type}</Tag>
-              <span>发布时间：{new Date(news.createTime).toLocaleDateString()}</span>
-              <span>阅读量：{news.views}</span>
-            </div>
-            <Divider />
-            <Paragraph>{news.content}</Paragraph>
-          </NewsContent>
-        </NewsContainer>
-      </MainContent>
-      <Footer />
-    </NewsDetailWrapper>
+    <PageWrapper>
+      <StyledBreadcrumb>
+        <Breadcrumb.Item>
+          <Link to="/">首页</Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <Link to="/news">新闻动态</Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>{news.title}</Breadcrumb.Item>
+      </StyledBreadcrumb>
+
+      <ContentWrapper>
+        <Title level={2}>{news.title}</Title>
+        <NewsMeta>
+          <Tag color="blue" className="tag">{news.type}</Tag>
+          <span className="date">
+            {new Date(news.createTime).toLocaleDateString()}
+          </span>
+          <span className="views">阅读量：{news.views}</span>
+        </NewsMeta>
+        {news.image && (
+          <NewsImage src={news.image} alt={news.title} />
+        )}
+        <NewsContent dangerouslySetInnerHTML={{ __html: news.content }} />
+      </ContentWrapper>
+    </PageWrapper>
   );
 };
 

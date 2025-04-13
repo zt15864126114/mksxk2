@@ -1,133 +1,134 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Card, Row, Col, Spin, Typography, Tag, Divider } from 'antd';
+import { Row, Col, Spin, Image, Typography, Breadcrumb } from 'antd';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { productService, Product } from '../services/productService';
-import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
+import api from '../services/api';
 
 const { Title, Paragraph } = Typography;
 
-const ProductDetailWrapper = styled.div`
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-`;
+interface Product {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+  category: string;
+  content: string;
+  createTime: string;
+  updateTime: string;
+}
 
-const MainContent = styled.main`
-  flex: 1;
-  padding: 80px 0;
-  background: #f5f5f5;
-`;
-
-const ProductContainer = styled.div`
+const PageWrapper = styled.div`
+  padding: 100px 20px 50px;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
 `;
 
-const ProductImage = styled.img`
+const StyledBreadcrumb = styled(Breadcrumb)`
+  margin-bottom: 24px;
+`;
+
+const ProductImage = styled(Image)`
   width: 100%;
-  height: auto;
+  max-height: 400px;
+  object-fit: cover;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 `;
 
-const ProductInfo = styled.div`
-  background: white;
-  padding: 30px;
+const ContentWrapper = styled.div`
+  padding: 24px;
+  background: #fff;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  
-  .ant-typography {
-    margin-bottom: 20px;
-  }
-  
-  .ant-tag {
-    margin-right: 10px;
-  }
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+`;
+
+const LoadingWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
 `;
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [product, setProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        if (id) {
-          const data = await productService.getProductById(parseInt(id));
-          setProduct(data);
-        }
+        const response = await api.get(`/products/${id}`);
+        setProduct(response.data);
+        
+        // 记录产品访问量
+        await api.post(`/product-stats/${id}/increment-views`);
       } catch (error) {
-        console.error('Failed to fetch product:', error);
+        console.error('获取产品详情失败:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProduct();
+    if (id) {
+      fetchProduct();
+    }
   }, [id]);
 
   if (loading) {
     return (
-      <ProductDetailWrapper>
-        <Header />
-        <MainContent>
-          <div style={{ textAlign: 'center', padding: '100px 0' }}>
-            <Spin size="large" />
-          </div>
-        </MainContent>
-        <Footer />
-      </ProductDetailWrapper>
+      <PageWrapper>
+        <LoadingWrapper>
+          <Spin size="large" />
+        </LoadingWrapper>
+      </PageWrapper>
     );
   }
 
   if (!product) {
     return (
-      <ProductDetailWrapper>
-        <Header />
-        <MainContent>
-          <div style={{ textAlign: 'center', padding: '100px 0' }}>
-            <Title level={2}>产品不存在</Title>
-          </div>
-        </MainContent>
-        <Footer />
-      </ProductDetailWrapper>
+      <PageWrapper>
+        <Title level={3}>产品不存在</Title>
+        <Link to="/products">返回产品列表</Link>
+      </PageWrapper>
     );
   }
 
   return (
-    <ProductDetailWrapper>
-      <Header />
-      <MainContent>
-        <ProductContainer>
-          <Row gutter={[40, 40]}>
-            <Col xs={24} md={12}>
-              <ProductImage src={product.image} alt={product.title} />
-            </Col>
-            <Col xs={24} md={12}>
-              <ProductInfo>
-                <Title level={2}>{product.title}</Title>
-                <Tag color="blue">{product.category}</Tag>
-                <Divider />
-                <Paragraph>{product.description}</Paragraph>
-                <div>
-                  <strong>创建时间：</strong>
-                  {new Date(product.createTime).toLocaleDateString()}
-                </div>
-                <div>
-                  <strong>更新时间：</strong>
-                  {new Date(product.updateTime).toLocaleDateString()}
-                </div>
-              </ProductInfo>
-            </Col>
-          </Row>
-        </ProductContainer>
-      </MainContent>
-      <Footer />
-    </ProductDetailWrapper>
+    <PageWrapper>
+      <StyledBreadcrumb>
+        <Breadcrumb.Item>
+          <Link to="/">首页</Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <Link to="/products">产品中心</Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>{product.title}</Breadcrumb.Item>
+      </StyledBreadcrumb>
+
+      <Row gutter={[32, 32]}>
+        <Col xs={24} md={12}>
+          <ProductImage
+            src={product.image || '/default-product.jpg'}
+            alt={product.title}
+            fallback="/default-product.jpg"
+          />
+        </Col>
+        <Col xs={24} md={12}>
+          <ContentWrapper>
+            <Title level={2}>{product.title}</Title>
+            <Paragraph type="secondary">
+              分类：{product.category}
+            </Paragraph>
+            <Paragraph strong>
+              产品描述：
+            </Paragraph>
+            <Paragraph>{product.description}</Paragraph>
+            <Title level={3}>产品详情</Title>
+            <div dangerouslySetInnerHTML={{ __html: product.content }} />
+          </ContentWrapper>
+        </Col>
+      </Row>
+    </PageWrapper>
   );
 };
 

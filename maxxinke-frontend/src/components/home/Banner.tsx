@@ -56,20 +56,20 @@ const Banner: React.FC = () => {
     {
       id: 1,
       image: '/banner1.jpg',
-      title: '创新科技，引领未来',
-      description: '专注于提供高品质的工业自动化解决方案'
+      title: '专业水处理产品制造商',
+      description: '致力于提供高品质的水处理产品和水泥外加剂解决方案'
     },
     {
       id: 2,
       image: '/banner2.jpg',
-      title: '专业团队，优质服务',
-      description: '十年行业经验，为您提供最专业的服务'
+      title: '创新环保技术',
+      description: '以创新科技助力环保事业，打造绿色可持续发展'
     },
     {
       id: 3,
       image: '/banner3.jpg',
-      title: '全球视野，本地服务',
-      description: '整合全球资源，提供本地化服务支持'
+      title: '优质服务保障',
+      description: '专业的技术团队，为您提供全方位的技术支持和服务'
     }
   ];
 

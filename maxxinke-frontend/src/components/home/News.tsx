@@ -81,24 +81,24 @@ const News: React.FC = () => {
   const newsData: NewsItem[] = [
     {
       id: 1,
-      title: '公司新闻标题1',
-      description: '这是公司新闻的简短描述，介绍新闻的主要内容...',
+      title: '麦克斯鑫科成功开发新型水处理产品',
+      description: '公司最新研发的高效絮凝剂产品，在工业废水处理领域取得重大突破...',
       type: '公司新闻',
       date: '2024-01-15',
       views: 1234
     },
     {
       id: 2,
-      title: '行业动态标题2',
-      description: '这是行业动态的简短描述，介绍行业的最新发展...',
+      title: '水泥行业环保新规解读',
+      description: '最新环保政策对水泥行业的影响及应对措施分析...',
       type: '行业动态',
       date: '2024-01-14',
       views: 856
     },
     {
       id: 3,
-      title: '技术创新标题3',
-      description: '这是技术创新的简短描述，介绍最新的技术突破...',
+      title: '水处理技术创新应用案例',
+      description: '公司在某大型工业园区水处理项目中的创新技术应用...',
       type: '技术创新',
       date: '2024-01-13',
       views: 567

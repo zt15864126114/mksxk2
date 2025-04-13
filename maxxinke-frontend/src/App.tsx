@@ -1,17 +1,23 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
+import About from './pages/About';
+import Products from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
+import News from './pages/News';
 import NewsDetail from './pages/NewsDetail';
+import Contact from './pages/Contact';
+import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import './styles/global.css';
 
-// 临时页面组件
-const TempPage: React.FC<{ title: string }> = ({ title }) => (
-  <div style={{ padding: '100px 20px 20px', textAlign: 'center' }}>
-    <h1>{title}</h1>
-    <p>页面建设中...</p>
+const PageLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <Header />
+    <main style={{ flex: 1 }}>{children}</main>
+    <Footer />
   </div>
 );
 
@@ -20,13 +26,13 @@ const App: React.FC = () => {
     <ConfigProvider locale={zhCN}>
       <Router>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<TempPage title="关于我们" />} />
-          <Route path="/products" element={<TempPage title="产品中心" />} />
-          <Route path="/products/:id" element={<ProductDetail />} />
-          <Route path="/news" element={<TempPage title="新闻动态" />} />
-          <Route path="/news/:id" element={<NewsDetail />} />
-          <Route path="/contact" element={<TempPage title="联系我们" />} />
+          <Route path="/" element={<PageLayout><Home /></PageLayout>} />
+          <Route path="/about" element={<PageLayout><About /></PageLayout>} />
+          <Route path="/products" element={<PageLayout><Products /></PageLayout>} />
+          <Route path="/products/:id" element={<PageLayout><ProductDetail /></PageLayout>} />
+          <Route path="/news" element={<PageLayout><News /></PageLayout>} />
+          <Route path="/news/:id" element={<PageLayout><NewsDetail /></PageLayout>} />
+          <Route path="/contact" element={<PageLayout><Contact /></PageLayout>} />
         </Routes>
       </Router>
     </ConfigProvider>

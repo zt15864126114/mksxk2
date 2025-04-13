@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Button } from 'antd';
+import { Layout, Menu, Button, Drawer } from 'antd';
 import { MenuOutlined } from '@ant-design/icons';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { useNavigate, useLocation } from 'react-router-dom';
 
 const { Header: AntHeader } = Layout;
 
@@ -51,28 +51,32 @@ const MobileMenu = styled.div`
   }
 `;
 
-const Header: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
+const StyledDrawer = styled(Drawer)`
+  .ant-drawer-body {
+    padding: 0;
+  }
+  
+  .ant-menu {
+    border: none;
+  }
+`;
 
-  // 根据当前路径获取选中的菜单项
-  const getSelectedKey = () => {
-    const path = location.pathname;
-    if (path === '/') return 'home';
-    return path.split('/')[1] || 'home';
-  };
+const Header: React.FC = () => {
+  const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const menuItems = [
-    { key: 'home', label: '首页', path: '/' },
-    { key: 'about', label: '关于我们', path: '/about' },
-    { key: 'products', label: '产品中心', path: '/products' },
-    { key: 'news', label: '新闻动态', path: '/news' },
-    { key: 'contact', label: '联系我们', path: '/contact' },
+    { key: '/', label: '首页' },
+    { key: '/about', label: '关于我们' },
+    { key: '/products', label: '产品中心' },
+    { key: '/news', label: '新闻动态' },
+    { key: '/contact', label: '联系我们' },
   ];
 
   const handleMenuClick = (path: string) => {
     navigate(path);
+    setMobileMenuVisible(false);
   };
 
   return (
@@ -85,27 +89,40 @@ const Header: React.FC = () => {
       />
       <Menu
         mode="horizontal"
-        selectedKeys={[getSelectedKey()]}
+        selectedKeys={[location.pathname]}
+        className="menu"
         items={menuItems.map(item => ({
           key: item.key,
-          label: item.label,
-          onClick: () => handleMenuClick(item.path)
+          label: <Link to={item.key}>{item.label}</Link>
         }))}
-        className="menu"
       />
-      <Button 
-        type="primary" 
-        className="contact-btn"
-        onClick={() => navigate('/contact')}
-      >
-        联系我们
-      </Button>
+      <Link to="/contact">
+        <Button type="primary" className="contact-btn">
+          联系我们
+        </Button>
+      </Link>
       <MobileMenu>
         <Button
           icon={<MenuOutlined />}
-          onClick={() => setMobileMenuVisible(!mobileMenuVisible)}
+          onClick={() => setMobileMenuVisible(true)}
         />
       </MobileMenu>
+      <StyledDrawer
+        title="导航菜单"
+        placement="right"
+        onClose={() => setMobileMenuVisible(false)}
+        open={mobileMenuVisible}
+      >
+        <Menu
+          mode="vertical"
+          selectedKeys={[location.pathname]}
+          items={menuItems.map(item => ({
+            key: item.key,
+            label: item.label,
+            onClick: () => handleMenuClick(item.key)
+          }))}
+        />
+      </StyledDrawer>
     </StyledHeader>
   );
 };

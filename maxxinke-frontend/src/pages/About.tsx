@@ -1,124 +1,154 @@
 import React from 'react';
-import styled from 'styled-components';
 import { Typography, Row, Col, Card } from 'antd';
+import styled from 'styled-components';
 
 const { Title, Paragraph } = Typography;
 
-const AboutWrapper = styled.div`
-  padding: 60px 0;
-  background-color: #f5f5f5;
-  min-height: calc(100vh - 64px - 200px);
-`;
-
-const Container = styled.div`
+const PageWrapper = styled.div`
+  padding: 100px 20px 50px;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+`;
+
+const PageTitle = styled(Title)`
+  text-align: center;
+  margin-bottom: 50px !important;
+`;
+
+const SectionTitle = styled(Title)`
+  margin-bottom: 24px !important;
 `;
 
 const StyledCard = styled(Card)`
   height: 100%;
-  text-align: center;
-  
-  .ant-card-body {
-    padding: 24px;
-  }
-
-  .icon {
-    font-size: 48px;
-    color: #1890ff;
-    margin-bottom: 16px;
+  .ant-card-head-title {
+    font-size: 18px;
   }
 `;
 
 const About: React.FC = () => {
   return (
-    <AboutWrapper>
-      <Container>
-        <Typography>
-          <Title level={2} style={{ textAlign: 'center', marginBottom: 40 }}>
-            关于麦克斯鑫科
-          </Title>
-          
-          <Paragraph style={{ fontSize: 16, marginBottom: 40 }}>
-            麦克斯鑫科是一家专注于工业自动化设备研发和制造的高新技术企业。
-            我们致力于为客户提供高质量、高效率的自动化解决方案，
-            帮助企业实现智能制造转型升级。
-          </Paragraph>
+    <PageWrapper>
+      <PageTitle level={2}>关于我们</PageTitle>
+      
+      <Row gutter={[24, 24]}>
+        <Col span={24}>
+          <StyledCard>
+            <SectionTitle level={3}>公司简介</SectionTitle>
+            <Paragraph>
+              麦克斯鑫科（山东）新型材料科技有限公司是一家专业从事水处理产品和水泥外加剂的研发、设计、生产与销售的高新技术企业。公司致力于为客户提供高品质的水处理解决方案和水泥外加剂产品，以创新科技推动环保事业发展。
+            </Paragraph>
+          </StyledCard>
+        </Col>
 
-          <Row gutter={[24, 24]} style={{ marginBottom: 40 }}>
-            <Col xs={24} sm={8}>
-              <StyledCard>
-                <div className="icon">🎯</div>
-                <Title level={4}>企业愿景</Title>
-                <Paragraph>
-                  成为工业自动化领域的领军企业，
-                  引领行业技术创新与发展
-                </Paragraph>
-              </StyledCard>
-            </Col>
-            <Col xs={24} sm={8}>
-              <StyledCard>
-                <div className="icon">🌟</div>
-                <Title level={4}>企业使命</Title>
-                <Paragraph>
-                  以科技创新推动工业进步，
-                  为客户创造更大价值
-                </Paragraph>
-              </StyledCard>
-            </Col>
-            <Col xs={24} sm={8}>
-              <StyledCard>
-                <div className="icon">💎</div>
-                <Title level={4}>核心价值观</Title>
-                <Paragraph>
-                  诚信、创新、专业、共赢
-                </Paragraph>
-              </StyledCard>
-            </Col>
-          </Row>
+        <Col span={24}>
+          <StyledCard>
+            <SectionTitle level={3}>核心优势</SectionTitle>
+            <Row gutter={[24, 24]}>
+              <Col xs={24} md={8}>
+                <Card bordered={false} title="技术创新">
+                  <ul>
+                    <li>专业的研发团队</li>
+                    <li>持续的技术创新</li>
+                    <li>先进的生产工艺</li>
+                  </ul>
+                </Card>
+              </Col>
+              <Col xs={24} md={8}>
+                <Card bordered={false} title="品质保证">
+                  <ul>
+                    <li>严格的质量控制</li>
+                    <li>完善的检测体系</li>
+                    <li>可靠的产品性能</li>
+                  </ul>
+                </Card>
+              </Col>
+              <Col xs={24} md={8}>
+                <Card bordered={false} title="服务支持">
+                  <ul>
+                    <li>专业的技术团队</li>
+                    <li>快速的响应机制</li>
+                    <li>完善的售后服务</li>
+                  </ul>
+                </Card>
+              </Col>
+            </Row>
+          </StyledCard>
+        </Col>
 
-          <Title level={3} style={{ marginBottom: 24 }}>
-            企业优势
-          </Title>
-          
-          <Row gutter={[24, 24]}>
-            <Col xs={24} md={12}>
-              <Card title="研发实力">
-                <Paragraph>
-                  拥有专业的研发团队和先进的研发设备，
-                  具备强大的技术创新能力和产品开发能力。
-                </Paragraph>
-              </Card>
-            </Col>
-            <Col xs={24} md={12}>
-              <Card title="品质保证">
-                <Paragraph>
-                  严格的质量管理体系，确保产品的稳定性和可靠性，
-                  为客户提供优质的产品和服务。
-                </Paragraph>
-              </Card>
-            </Col>
-            <Col xs={24} md={12}>
-              <Card title="服务支持">
-                <Paragraph>
-                  完善的售前、售中、售后服务体系，
-                  快速响应客户需求，提供专业的技术支持。
-                </Paragraph>
-              </Card>
-            </Col>
-            <Col xs={24} md={12}>
-              <Card title="行业经验">
-                <Paragraph>
-                  多年的行业经验积累，深入了解客户需求，
-                  能够提供最适合的解决方案。
-                </Paragraph>
-              </Card>
-            </Col>
-          </Row>
-        </Typography>
-      </Container>
-    </AboutWrapper>
+        <Col span={24}>
+          <StyledCard>
+            <SectionTitle level={3}>产品优势</SectionTitle>
+            <Row gutter={[24, 24]}>
+              <Col xs={24} md={12}>
+                <Card bordered={false} title="水处理产品">
+                  <Paragraph>
+                    公司开发的水处理产品系列，包括絮凝剂、助滤剂、COD去除剂等，具有以下特点：
+                  </Paragraph>
+                  <ul>
+                    <li>处理效果好，出水达标率高</li>
+                    <li>使用成本低，性价比高</li>
+                    <li>操作简单，适用性强</li>
+                    <li>环保安全，无二次污染</li>
+                  </ul>
+                </Card>
+              </Col>
+              <Col xs={24} md={12}>
+                <Card bordered={false} title="水泥外加剂">
+                  <Paragraph>
+                    公司生产的水泥外加剂产品，包括减水剂、抑尘剂等，具有以下优势：
+                  </Paragraph>
+                  <ul>
+                    <li>性能稳定，适应性强</li>
+                    <li>减水率高，和易性好</li>
+                    <li>抑尘效果显著</li>
+                    <li>使用方便，经济实用</li>
+                  </ul>
+                </Card>
+              </Col>
+            </Row>
+          </StyledCard>
+        </Col>
+
+        <Col span={24}>
+          <StyledCard>
+            <SectionTitle level={3}>应用领域</SectionTitle>
+            <Row gutter={[24, 24]}>
+              <Col xs={24} md={8}>
+                <Card bordered={false} title="工业领域">
+                  <ul>
+                    <li>污水处理厂</li>
+                    <li>石油化工</li>
+                    <li>电力行业</li>
+                    <li>钢铁冶金</li>
+                  </ul>
+                </Card>
+              </Col>
+              <Col xs={24} md={8}>
+                <Card bordered={false} title="民用领域">
+                  <ul>
+                    <li>城镇供水</li>
+                    <li>环保工程</li>
+                    <li>市政工程</li>
+                    <li>建筑工程</li>
+                  </ul>
+                </Card>
+              </Col>
+              <Col xs={24} md={8}>
+                <Card bordered={false} title="特种行业">
+                  <ul>
+                    <li>纺织印染</li>
+                    <li>造纸行业</li>
+                    <li>食品加工</li>
+                    <li>屠宰行业</li>
+                  </ul>
+                </Card>
+              </Col>
+            </Row>
+          </StyledCard>
+        </Col>
+      </Row>
+    </PageWrapper>
   );
 };
 
