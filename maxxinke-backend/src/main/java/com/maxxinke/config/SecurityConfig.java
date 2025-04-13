@@ -97,6 +97,8 @@ public class SecurityConfig {
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/public/**").permitAll()
                 .antMatchers("/api/messages/**").permitAll()  // 允许消息相关的所有请求
+                .antMatchers("/api/news/**").permitAll()  // 允许消息相关的所有请求
+                .antMatchers("/api/products/**").permitAll()  // 允许消息相关的所有请求
                 .antMatchers("/api/admins/**").hasRole("ADMIN")
                 // Swagger UI paths
                 .antMatchers("/swagger-ui/**",
@@ -121,7 +123,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         logger.debug("Configuring CORS");
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3001"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3001", "http://localhost:8080"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

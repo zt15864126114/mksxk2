@@ -1,9 +1,11 @@
 package com.maxxinke.service.impl;
 
 import com.maxxinke.entity.Message;
+import com.maxxinke.exception.BusinessException;
 import com.maxxinke.repository.MessageRepository;
 import com.maxxinke.service.MessageService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,10 +18,11 @@ import java.util.List;
  */
 @Service
 @Transactional
+@RequiredArgsConstructor
+@Slf4j
 public class MessageServiceImpl implements MessageService {
     
-    @Autowired
-    private MessageRepository messageRepository;
+    private final MessageRepository messageRepository;
     
     /**
      * 创建新留言
@@ -28,7 +31,13 @@ public class MessageServiceImpl implements MessageService {
      */
     @Override
     public Message createMessage(Message message) {
-        return messageRepository.save(message);
+        try {
+            log.info("创建新留言: {}", message.getContent());
+            return messageRepository.save(message);
+        } catch (Exception e) {
+            log.error("创建留言失败", e);
+            throw new BusinessException("创建留言失败");
+        }
     }
     
     /**
@@ -38,7 +47,13 @@ public class MessageServiceImpl implements MessageService {
      */
     @Override
     public Message updateMessage(Message message) {
-        return messageRepository.save(message);
+        try {
+            log.info("更新留言信息, ID: {}", message.getId());
+            return messageRepository.save(message);
+        } catch (Exception e) {
+            log.error("更新留言失败, ID: {}", message.getId(), e);
+            throw new BusinessException("更新留言失败");
+        }
     }
     
     /**
@@ -47,7 +62,13 @@ public class MessageServiceImpl implements MessageService {
      */
     @Override
     public void deleteMessage(Long id) {
-        messageRepository.deleteById(id);
+        try {
+            log.info("删除留言, ID: {}", id);
+            messageRepository.deleteById(id);
+        } catch (Exception e) {
+            log.error("删除留言失败, ID: {}", id, e);
+            throw new BusinessException("删除留言失败");
+        }
     }
     
     /**
@@ -57,7 +78,16 @@ public class MessageServiceImpl implements MessageService {
      */
     @Override
     public Message getMessageById(Long id) {
-        return messageRepository.findById(id).orElse(null);
+        try {
+            log.info("获取留言, ID: {}", id);
+            return messageRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("留言不存在"));
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("获取留言失败, ID: {}", id, e);
+            throw new BusinessException("获取留言失败");
+        }
     }
     
     /**
@@ -66,7 +96,13 @@ public class MessageServiceImpl implements MessageService {
      */
     @Override
     public List<Message> getAllMessages() {
-        return messageRepository.findAll();
+        try {
+            log.info("获取所有留言列表");
+            return messageRepository.findAll();
+        } catch (Exception e) {
+            log.error("获取所有留言列表失败", e);
+            throw new BusinessException("获取留言列表失败");
+        }
     }
     
     /**
@@ -76,7 +112,13 @@ public class MessageServiceImpl implements MessageService {
      */
     @Override
     public List<Message> getMessagesByStatus(Integer status) {
-        return messageRepository.findByStatus(status, Pageable.unpaged()).getContent();
+        try {
+            log.info("根据状态获取留言列表, 状态: {}", status);
+            return messageRepository.findByStatus(status, Pageable.unpaged()).getContent();
+        } catch (Exception e) {
+            log.error("根据状态获取留言列表失败, 状态: {}", status, e);
+            throw new BusinessException("获取留言列表失败");
+        }
     }
     
     /**
@@ -87,13 +129,18 @@ public class MessageServiceImpl implements MessageService {
      */
     @Override
     public Message replyMessage(Long id, String reply) {
-        Message message = getMessageById(id);
-        if (message != null) {
+        try {
+            log.info("回复留言, ID: {}", id);
+            Message message = getMessageById(id);
             message.setReply(reply);
             message.setStatus(1); // 设置为已回复状态
             return messageRepository.save(message);
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("回复留言失败, ID: {}", id, e);
+            throw new BusinessException("回复留言失败");
         }
-        return null;
     }
 
     /**
@@ -102,7 +149,13 @@ public class MessageServiceImpl implements MessageService {
      */
     @Override
     public List<Message> findAll() {
-        return messageRepository.findAll();
+        try {
+            log.info("获取所有留言");
+            return messageRepository.findAll();
+        } catch (Exception e) {
+            log.error("获取所有留言失败", e);
+            throw new BusinessException("获取留言列表失败");
+        }
     }
 
     /**
@@ -112,31 +165,62 @@ public class MessageServiceImpl implements MessageService {
      */
     @Override
     public List<Message> findByStatus(Integer status) {
-        return messageRepository.findByStatus(status, Pageable.unpaged()).getContent();
+        try {
+            log.info("根据状态获取留言, 状态: {}", status);
+            return messageRepository.findByStatus(status, Pageable.unpaged()).getContent();
+        } catch (Exception e) {
+            log.error("根据状态获取留言失败, 状态: {}", status, e);
+            throw new BusinessException("获取留言列表失败");
+        }
     }
 
     @Override
     public Page<Message> findByStatus(Integer status, Pageable pageable) {
-        return messageRepository.findByStatus(status, pageable);
+        try {
+            log.info("分页获取留言, 状态: {}, 页码: {}, 大小: {}", status, 
+                pageable.getPageNumber(), pageable.getPageSize());
+            return messageRepository.findByStatus(status, pageable);
+        } catch (Exception e) {
+            log.error("分页获取留言失败, 状态: {}", status, e);
+            throw new BusinessException("获取留言列表失败");
+        }
     }
 
     @Override
     public Page<Message> findAll(Pageable pageable) {
-        return messageRepository.findAll(pageable);
+        try {
+            log.info("分页获取所有留言, 页码: {}, 大小: {}", 
+                pageable.getPageNumber(), pageable.getPageSize());
+            return messageRepository.findAll(pageable);
+        } catch (Exception e) {
+            log.error("分页获取所有留言失败", e);
+            throw new BusinessException("获取留言列表失败");
+        }
     }
 
     @Override
     public List<Message> findByUserId(Long userId) {
-        return messageRepository.findByUserId(userId);
+        try {
+            log.info("获取用户留言, 用户ID: {}", userId);
+            return messageRepository.findByUserId(userId);
+        } catch (Exception e) {
+            log.error("获取用户留言失败, 用户ID: {}", userId, e);
+            throw new BusinessException("获取用户留言失败");
+        }
     }
 
     @Override
     public Message updateStatus(Long id, Integer status) {
-        Message message = getMessageById(id);
-        if (message != null) {
+        try {
+            log.info("更新留言状态, ID: {}, 状态: {}", id, status);
+            Message message = getMessageById(id);
             message.setStatus(status);
             return messageRepository.save(message);
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("更新留言状态失败, ID: {}, 状态: {}", id, status, e);
+            throw new BusinessException("更新留言状态失败");
         }
-        return null;
     }
 }

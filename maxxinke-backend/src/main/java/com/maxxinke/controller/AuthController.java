@@ -93,7 +93,10 @@ public class AuthController {
         } catch (BadCredentialsException e) {
             logger.warn("Login failed for username: {} - Bad credentials", username);
             logger.debug("BadCredentialsException details: {}", e.getMessage());
-            throw new BadCredentialsException("用户名或密码错误");
+            
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "用户名或密码错误");
+            return ResponseEntity.status(401).body(errorResponse);
         }
     }
 } 
