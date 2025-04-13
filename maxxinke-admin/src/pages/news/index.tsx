@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Space, Modal, message, Tag } from 'antd';
+import { Table, Button, Space, Modal, message } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import NewsForm from './components/NewsFormNew';
+import NewsForm from './components/NewsForm';
 import { getNews, createNews, updateNews, deleteNews } from '@/services/newsService';
 import type { News } from '@/services/newsService';
 import dayjs from 'dayjs';
@@ -19,13 +19,9 @@ const NewsPage: React.FC = () => {
     try {
       setLoading(true);
       const response = await getNews({ page, size });
-      console.log('API响应:', response);
       if (response && response.content) {
         setNews(response.content);
         setTotal(response.totalElements);
-      } else {
-        console.error('API响应格式不正确:', response);
-        message.error('获取新闻列表失败: 响应格式不正确');
       }
     } catch (error) {
       console.error('获取新闻列表失败:', error);
@@ -60,13 +56,13 @@ const NewsPage: React.FC = () => {
     }
   };
 
-  const handleSave = async (values: Partial<News>) => {
+  const handleSave = async (formData: FormData) => {
     try {
       if (editingNews?.id) {
-        await updateNews(editingNews.id.toString(), values);
+        await updateNews(editingNews.id.toString(), formData);
         message.success('更新成功');
       } else {
-        await createNews(values);
+        await createNews(formData);
         message.success('创建成功');
       }
       setModalVisible(false);
@@ -89,9 +85,9 @@ const NewsPage: React.FC = () => {
       key: 'title',
     },
     {
-      title: '类别',
-      dataIndex: 'category',
-      key: 'category',
+      title: '类型',
+      dataIndex: 'type',
+      key: 'type',
     },
     {
       title: '内容',
@@ -104,14 +100,14 @@ const NewsPage: React.FC = () => {
       dataIndex: 'image',
       key: 'image',
       render: (image: string) => (
-        <img src={image} alt="新闻图片" style={{ width: 50, height: 50, objectFit: 'cover' }} />
+        image ? <img src={image} alt="新闻图片" style={{ width: 50, height: 50, objectFit: 'cover' }} /> : '-'
       ),
     },
     {
       title: '状态',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => (status === 'PUBLISHED' ? '已发布' : '草稿'),
+      render: (status: number) => (status === 1 ? '启用' : '禁用'),
     },
     {
       title: '创建时间',
@@ -177,6 +173,7 @@ const NewsPage: React.FC = () => {
         <NewsForm
           initialValues={editingNews || undefined}
           onFinish={handleSave}
+          loading={loading}
         />
       </Modal>
     </div>

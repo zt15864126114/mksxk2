@@ -1,14 +1,16 @@
 import { newsAPI } from './api';
 import type { News } from '../types/news';
 
-export const getNews = async (params?: any) => {
-  try {
-    const response = await newsAPI.getNewsList(params);
-    return response;
-  } catch (error) {
-    console.error('获取新闻列表失败:', error);
-    throw error;
-  }
+export interface NewsResponse {
+  content: News[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}
+
+export const getNews = (params: any) => {
+  return newsAPI.getNewsList(params);
 };
 
 export const getNewsById = async (id: string) => {
@@ -21,9 +23,9 @@ export const getNewsById = async (id: string) => {
   }
 };
 
-export const createNews = async (news: News) => {
+export const createNews = async (data: FormData) => {
   try {
-    const response = await newsAPI.createNewsItem(news);
+    const response = await newsAPI.createNewsItem(data);
     return response;
   } catch (error) {
     console.error('创建新闻失败:', error);
@@ -31,9 +33,9 @@ export const createNews = async (news: News) => {
   }
 };
 
-export const updateNews = async (id: string, news: News) => {
+export const updateNews = async (id: string, data: FormData) => {
   try {
-    const response = await newsAPI.updateNewsItem(id, news);
+    const response = await newsAPI.updateNewsItem(id, data);
     return response;
   } catch (error) {
     console.error('更新新闻失败:', error);
@@ -41,12 +43,6 @@ export const updateNews = async (id: string, news: News) => {
   }
 };
 
-export const deleteNews = async (id: string) => {
-  try {
-    const response = await newsAPI.deleteNewsItem(id);
-    return response;
-  } catch (error) {
-    console.error('删除新闻失败:', error);
-    throw error;
-  }
+export const deleteNews = (id: string) => {
+  return newsAPI.deleteNewsItem(id);
 }; 
