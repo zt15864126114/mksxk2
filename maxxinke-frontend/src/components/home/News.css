@@ -1,0 +1,25 @@
+.news-section {
+  padding: 40px 0;
+}
+
+.news-section h2 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.news-meta {
+  margin-top: 10px;
+}
+
+.news-meta .tag {
+  margin-right: 10px;
+}
+
+.news-meta .date {
+  margin-right: 10px;
+  color: #999;
+}
+
+.news-meta .views {
+  color: #999;
+} 

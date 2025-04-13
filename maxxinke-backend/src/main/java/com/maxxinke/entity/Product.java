@@ -38,6 +38,9 @@ public class Product {
     @Column(nullable = false)
     private Integer status = 1;
     
+    @Column(nullable = false)
+    private Long views = 0L;
+    
     @Column(name = "create_time", nullable = false, updatable = false)
     private LocalDateTime createTime;
     
@@ -48,6 +51,9 @@ public class Product {
     protected void onCreate() {
         createTime = LocalDateTime.now();
         updateTime = LocalDateTime.now();
+        if (views == null) {
+            views = 0L;
+        }
     }
     
     @PreUpdate

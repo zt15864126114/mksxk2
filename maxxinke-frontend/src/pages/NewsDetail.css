@@ -1,0 +1,22 @@
+.news-detail {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.news-detail .ant-typography {
+  margin-bottom: 20px;
+}
+
+.news-meta {
+  margin-bottom: 20px;
+}
+
+.news-meta .ant-tag {
+  margin-right: 10px;
+}
+
+.news-meta span {
+  margin-right: 20px;
+  color: #999;
+} 

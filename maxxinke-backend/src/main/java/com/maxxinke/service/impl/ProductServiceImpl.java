@@ -8,10 +8,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.stream.Collectors;
 
 /**
  * 产品服务实现类
@@ -230,5 +234,53 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Page<Product> findAll(Pageable pageable) {
         return productRepository.findAll(pageable);
+    }
+
+    @Override
+    public List<Map<String, Object>> getProductTrends() {
+        return productRepository.countProductTrends().stream()
+                .map(row -> {
+                    Map<String, Object> item = new HashMap<>();
+                    item.put("month", row[0]);
+                    item.put("count", row[1]);
+                    return item;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Map<String, Object>> getCategoryStats() {
+        return productRepository.countByCategory().stream()
+                .map(row -> {
+                    Map<String, Object> item = new HashMap<>();
+                    item.put("category", row[0]);
+                    item.put("count", row[1]);
+                    return item;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Product> getHotProducts(int limit) {
+        return productRepository.findHotProducts(PageRequest.of(0, limit));
+    }
+
+    @Override
+    @Transactional
+    public void incrementViews(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+        product.setViews(product.getViews() + 1);
+        productRepository.save(product);
+    }
+
+    @Override
+    public Map<String, Object> getProductStats() {
+        Object[] overview = productRepository.getProductOverview();
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("total", overview[0]);
+        stats.put("monthNew", overview[1]);
+        stats.put("totalViews", overview[2]);
+        return stats;
     }
 } 
