@@ -99,6 +99,7 @@ public class SecurityConfig {
                 .antMatchers("/api/messages/**").permitAll()  // 允许消息相关的所有请求
                 .antMatchers("/api/news/**").permitAll()  // 允许消息相关的所有请求
                 .antMatchers("/api/products/**").permitAll()  // 允许消息相关的所有请求
+                .antMatchers("/api/dashboard/**").permitAll()  // 允许消息相关的所有请求
                 .antMatchers("/api/admins/**").hasRole("ADMIN")
                 // Swagger UI paths
                 .antMatchers("/swagger-ui/**",
