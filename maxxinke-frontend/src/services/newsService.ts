@@ -26,6 +26,7 @@ export interface NewsListParams {
   pageSize: number;
   type?: string;
   status?: number;
+  keyword?: string;
 }
 
 export const newsService = {

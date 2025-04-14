@@ -33,6 +33,7 @@ export interface ProductListParams {
   pageSize: number;
   category?: string;
   status?: number;
+  keyword?: string;
 }
 
 export interface CategoryStat {
