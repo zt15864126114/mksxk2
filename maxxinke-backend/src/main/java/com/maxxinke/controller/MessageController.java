@@ -108,11 +108,17 @@ public class MessageController {
     @ApiOperation(value = "更新消息状态", notes = "更新消息的状态（已读/未读）")
     @PutMapping("/{id}/status")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Message> updateMessageStatus(
-            @ApiParam(value = "消息ID", required = true)
+    public ResponseEntity<Void> updateStatus(
             @PathVariable Long id,
-            @ApiParam(value = "消息状态：0-未读，1-已读", required = true)
-            @RequestParam Integer status) {
-        return ResponseEntity.ok(messageService.updateStatus(id, status));
+            @RequestBody String status) {
+        messageService.updateStatus(id, status);
+        return ResponseEntity.ok().build();
+    }
+    
+    @ApiOperation("全部标记为已读")
+    @PutMapping("/mark-all-as-read")
+    public ResponseEntity<Void> markAllAsRead() {
+        messageService.markAllAsRead();
+        return ResponseEntity.ok().build();
     }
 } 

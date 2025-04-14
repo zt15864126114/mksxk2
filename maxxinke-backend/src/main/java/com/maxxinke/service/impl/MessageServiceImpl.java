@@ -210,17 +210,27 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public Message updateStatus(Long id, Integer status) {
+    public Message updateStatus(Long id, String status) {
+        Message message = getMessageById(id);
         try {
-            log.info("更新留言状态, ID: {}, 状态: {}", id, status);
-            Message message = getMessageById(id);
-            message.setStatus(status);
-            return messageRepository.save(message);
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("更新留言状态失败, ID: {}, 状态: {}", id, status, e);
-            throw new BusinessException("更新留言状态失败");
+            Integer statusValue = Integer.parseInt(status);
+            message.setStatus(statusValue);
+        } catch (NumberFormatException e) {
+            // 如果无法解析为整数，默认设置为已读(1)
+            message.setStatus(1);
+        }
+        return messageRepository.save(message);
+    }
+
+    @Override
+    public void markAllAsRead() {
+        // 查找所有未读消息
+        List<Message> unreadMessages = messageRepository.findByStatus(0);
+        
+        // 将所有未读消息标记为已读
+        for (Message message : unreadMessages) {
+            message.setStatus(1);
+            messageRepository.save(message);
         }
     }
 }

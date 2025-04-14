@@ -56,6 +56,15 @@ const MessagesPage: React.FC = () => {
     try {
       await messageService.markAsRead(id.toString());
       message.success('标记为已读成功');
+      
+      // 如果当前消息与modal中显示的消息相同，则更新状态
+      if (currentMessage && currentMessage.id === id) {
+        setCurrentMessage({
+          ...currentMessage,
+          status: '1'
+        });
+      }
+      
       fetchMessages();
     } catch (error) {
       message.error('标记为已读失败');
@@ -159,6 +168,21 @@ const MessagesPage: React.FC = () => {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
         <Title level={2}>消息管理</Title>
+        <Button 
+          type="primary" 
+          onClick={async () => {
+            try {
+              await messageService.markAllAsRead();
+              message.success('已将所有消息标记为已读');
+              fetchMessages();
+            } catch (error) {
+              message.error('操作失败');
+              console.error('标记所有消息为已读失败:', error);
+            }
+          }}
+        >
+          全部标记已读
+        </Button>
       </div>
 
       <Table
@@ -167,12 +191,17 @@ const MessagesPage: React.FC = () => {
         rowKey="id"
         loading={loading}
         pagination={false}
-        scroll={{ x: 1200 }}
+        scroll={{ x: 1200, y: 450 }}
       />
       
       <div style={{ 
         marginTop: 16, 
-        textAlign: 'right' 
+        textAlign: 'right',
+        padding: '16px 0',
+        backgroundColor: '#fff',
+        position: 'sticky',
+        bottom: 0,
+        zIndex: 5
       }}>
         <Pagination
           current={currentPage}
@@ -184,7 +213,7 @@ const MessagesPage: React.FC = () => {
           }}
           showSizeChanger
           showQuickJumper
-          showTotal={(total) => `共 ${total} 条`}
+          showTotal={(total) => `共 ${total} 条消息`}
         />
       </div>
 
@@ -199,8 +228,8 @@ const MessagesPage: React.FC = () => {
             justifyContent: 'space-between'
           }}>
             <span style={{ fontSize: '16px', fontWeight: 500 }}>消息详情</span>
-            <Tag color={currentMessage?.status === '1' ? 'green' : 'red'}>
-              {currentMessage?.status === '1' ? '已读' : '未读'}
+            <Tag color={currentMessage?.status === 1 || currentMessage?.status === '1' ? 'green' : 'red'}>
+              {currentMessage?.status === 1 || currentMessage?.status === '1' ? '已读' : '未读'}
             </Tag>
           </div>
         }
@@ -209,7 +238,21 @@ const MessagesPage: React.FC = () => {
         footer={[
           <Button key="close" onClick={() => setViewModalVisible(false)}>
             关闭
-          </Button>
+          </Button>,
+          currentMessage?.status === 0 || currentMessage?.status === '0' ? (
+            <Button 
+              key="markAsRead" 
+              type="primary" 
+              onClick={() => {
+                if (currentMessage?.id) {
+                  handleMarkAsRead(currentMessage.id);
+                  setViewModalVisible(false);
+                }
+              }}
+            >
+              标记为已读
+            </Button>
+          ) : null
         ]}
         width={700}
       >

@@ -72,6 +72,16 @@ export const messageService = {
     }
   },
 
+  markAllAsRead: async () => {
+    try {
+      const response = await messagesAPI.markAllAsRead();
+      return response;
+    } catch (error) {
+      console.error('标记所有消息为已读失败:', error);
+      throw error;
+    }
+  },
+
   replyMessage: async (id: string, reply: string) => {
     try {
       const response = await messagesAPI.replyMessage(id, reply);

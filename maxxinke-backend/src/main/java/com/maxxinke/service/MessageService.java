@@ -95,8 +95,13 @@ public interface MessageService {
     /**
      * 更新消息状态
      * @param id 消息ID
-     * @param status 状态（0-未读，1-已读）
-     * @return 更新后的消息
+     * @param status 状态值
+     * @return 更新后的消息对象
      */
-    Message updateStatus(Long id, Integer status);
+    Message updateStatus(Long id, String status);
+
+    /**
+     * 将所有未读消息标记为已读
+     */
+    void markAllAsRead();
 } 

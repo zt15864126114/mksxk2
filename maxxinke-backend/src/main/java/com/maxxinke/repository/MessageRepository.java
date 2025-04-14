@@ -21,4 +21,9 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     List<Message> findByUserId(Long userId);
 
     List<Message> findTop5ByOrderByCreateTimeDesc();
+
+    List<Message> findAllByOrderByCreateTimeDesc();
+    
+    // 根据状态查询消息
+    List<Message> findByStatus(Integer status);
 } 

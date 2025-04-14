@@ -250,23 +250,36 @@ export const messagesAPI = {
       method: 'get',
     }),
 
-  updateMessageStatus: (id: string, status: string) => 
+  updateMessageStatus: (id: string, status: string | number) => 
     request<any>({
-      url: `/messages/${id}/status?status=${status}`,
+      url: `/messages/${id}/status`,
       method: 'put',
+      data: status,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
     }),
 
-  replyMessage: (id: string, reply: string) =>
+  markAllAsRead: () => 
     request<any>({
-      url: `/messages/${id}/reply`,
+      url: `/messages/mark-all-as-read`,
       method: 'put',
-      data: { reply },
     }),
 
   deleteMessage: (id: string) => 
-    request<void>({
+    request<any>({
       url: `/messages/${id}`,
       method: 'delete',
+    }),
+
+  replyMessage: (id: string, reply: string) => 
+    request<any>({
+      url: `/messages/${id}/reply`,
+      method: 'post',
+      data: reply,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
     }),
 };
 

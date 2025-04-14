@@ -291,7 +291,7 @@ const DashboardPage: React.FC = () => {
               renderItem={item => (
                 <List.Item
                   extra={
-                    <Tag color={item.status === '未回复' ? 'red' : 'green'}>
+                    <Tag color={item.status === '未读' ? 'red' : 'green'}>
                       {item.status}
                     </Tag>
                   }
