@@ -51,10 +51,13 @@ const DashboardPage: React.FC = () => {
   const processVisitData = (data: VisitData[]): VisitData[] => {
     if (!data || data.length === 0) return [];
     
-    return data.map(item => ({
-      date: item.date || '无数据',
-      value: typeof item.value === 'number' ? item.value : 0
-    }));
+    // 过滤掉value为null或undefined的数据，并确保日期有值
+    return data
+      .filter(item => item.value !== null && item.value !== undefined && item.date && item.date !== 'null')
+      .map(item => ({
+        date: item.date || '无数据',
+        value: typeof item.value === 'number' ? item.value : 0
+      }));
   };
 
   // 获取所有仪表盘数据
