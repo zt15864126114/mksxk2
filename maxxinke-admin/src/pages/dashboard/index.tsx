@@ -237,7 +237,10 @@ const DashboardPage: React.FC = () => {
             }
           >
             <Line
-              data={processedVisitData}
+              data={processedVisitData.map(item => ({
+                ...item,
+                访问量: item.value  // 添加中文字段
+              }))}
               xField="date"
               yField="value"
               smooth
@@ -246,16 +249,12 @@ const DashboardPage: React.FC = () => {
                 shape: 'diamond',
               }}
               color="#1890ff"
-              tooltip={{
-                formatter: (datum: {date: string, value: number}) => {
-                  if (!datum || typeof datum.date !== 'string' || typeof datum.value !== 'number') {
-                    return { name: '访问量', value: '0' };
-                  }
-                  return { 
-                    name: timeRange === 'day' ? '日访问量' : 
-                           timeRange === 'month' ? '月访问量' : '年访问量',
-                    value: datum.value
-                  };
+              meta={{
+                date: {
+                  alias: '日期',  // 添加日期的中文别名
+                },
+                value: {
+                  alias: '访问量',  // 添加值的中文别名
                 }
               }}
               yAxis={{
