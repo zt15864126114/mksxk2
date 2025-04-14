@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Form, Input, Select, InputNumber, Upload, Button, message } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
-import type { Product } from '@/services/productService';
+import { Form, Input, Select, InputNumber, Upload, Button, message, Space } from 'antd';
+import { UploadOutlined, PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import type { Product, ProductSpecification } from '@/services/productService';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api';
 
@@ -107,13 +107,44 @@ const ProductForm: React.FC<ProductFormProps> = ({
         <Input.TextArea rows={4} placeholder="请输入产品描述" />
       </Form.Item>
 
-      <Form.Item
-        name="specification"
-        label="产品规格"
-        rules={[{ required: true, message: '请输入产品规格' }]}
-      >
-        <Input placeholder="请输入产品规格" />
-      </Form.Item>
+      <Form.List name="specifications" initialValue={[{}]}>
+        {(fields, { add, remove }) => (
+          <>
+            {fields.map(({ key, name, ...restField }) => (
+              <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                <Form.Item
+                  {...restField}
+                  name={[name, 'name']}
+                  rules={[{ required: true, message: '请输入规格名称' }]}
+                >
+                  <Input placeholder="规格名称" />
+                </Form.Item>
+                <Form.Item
+                  {...restField}
+                  name={[name, 'value']}
+                  rules={[{ required: true, message: '请输入规格值' }]}
+                >
+                  <Input placeholder="规格值" />
+                </Form.Item>
+                <Form.Item
+                  {...restField}
+                  name={[name, 'unit']}
+                >
+                  <Input placeholder="单位（选填）" />
+                </Form.Item>
+                {fields.length > 1 && (
+                  <MinusCircleOutlined onClick={() => remove(name)} />
+                )}
+              </Space>
+            ))}
+            <Form.Item>
+              <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                添加规格
+              </Button>
+            </Form.Item>
+          </>
+        )}
+      </Form.List>
 
       <Form.Item
         name="application"

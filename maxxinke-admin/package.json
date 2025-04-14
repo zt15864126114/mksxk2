@@ -10,18 +10,18 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
-    "@ant-design/icons": "^5.2.6",
+    "@ant-design/icons": "^5.6.1",
     "@ant-design/plots": "^2.3.3",
     "@ant-design/pro-components": "^2.6.49",
     "ahooks": "^3.7.8",
-    "antd": "^5.15.2",
-    "axios": "^1.6.8",
+    "antd": "^5.24.6",
+    "axios": "^1.8.4",
     "dayjs": "^1.11.10",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.13",
-    "react-router-dom": "^6.22.3",
+    "react-router-dom": "^6.30.0",
     "zustand": "^4.5.2"
   },
   "devDependencies": {

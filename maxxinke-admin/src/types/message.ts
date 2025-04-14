@@ -4,7 +4,7 @@ export interface Message {
   email: string;
   phone: string;
   content: string;
-  status: string;
+  status: string | number;
   createTime?: string;
   updateTime?: string;
 } 

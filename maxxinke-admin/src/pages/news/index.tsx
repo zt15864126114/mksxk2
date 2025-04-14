@@ -4,6 +4,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-de
 import NewsForm from './components/NewsForm';
 import { getNews, createNews, updateNews, deleteNews } from '@/services/newsService';
 import type { News } from '@/services/newsService';
+import type { SortOrder } from 'antd/es/table/interface';
 import dayjs from 'dayjs';
 
 const NewsPage: React.FC = () => {
@@ -139,6 +140,11 @@ const NewsPage: React.FC = () => {
       dataIndex: 'createTime',
       key: 'createTime',
       width: 180,
+      sorter: (a: News, b: News) => {
+        if (!a.createTime || !b.createTime) return 0;
+        return new Date(a.createTime).getTime() - new Date(b.createTime).getTime();
+      },
+      defaultSortOrder: 'descend' as SortOrder,
       render: (createTime: string) => dayjs(createTime).format('YYYY-MM-DD HH:mm:ss'),
     },
     {

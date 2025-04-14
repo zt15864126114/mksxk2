@@ -10,6 +10,7 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  InfoCircleOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '../store/userStore';
@@ -29,11 +30,12 @@ const MainLayout: React.FC = () => {
   // 确定当前选中的菜单项
   const getSelectedKey = () => {
     const path = location.pathname;
-    if (path.includes('/dashboard')) return 'dashboard';
-    if (path.includes('/products')) return 'products';
-    if (path.includes('/news')) return 'news'; 
-    if (path.includes('/messages')) return 'messages';
-    return 'dashboard';
+    if (path === '/' || path === '/dashboard') return 'dashboard';
+    if (path === '/about-us') return 'about-us';
+    if (path === '/products') return 'products';
+    if (path === '/news') return 'news'; 
+    if (path === '/messages') return 'messages';
+    return '';
   };
 
   const menuItems = [
@@ -42,6 +44,12 @@ const MainLayout: React.FC = () => {
       icon: <DashboardOutlined />,
       label: '仪表盘',
       onClick: () => navigate('/dashboard'),
+    },
+    {
+      key: 'about-us',
+      icon: <InfoCircleOutlined />,
+      label: '关于我们',
+      onClick: () => navigate('/about-us'),
     },
     {
       key: 'products',

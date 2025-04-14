@@ -70,8 +70,8 @@ public class ProductServiceImpl implements ProductService {
             if (product.getDescription() != null) {
                 existingProduct.setDescription(product.getDescription());
             }
-            if (product.getSpecification() != null) {
-                existingProduct.setSpecification(product.getSpecification());
+            if (product.getSpecifications() != null) {
+                existingProduct.setSpecifications(product.getSpecifications());
             }
             if (product.getApplication() != null) {
                 existingProduct.setApplication(product.getApplication());
@@ -169,7 +169,7 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public Page<Product> getProductsByStatus(Integer status, Pageable pageable) {
-        return productRepository.findByStatusOrderBySortDesc(status, pageable);
+        return productRepository.findByStatusOrderByCreateTimeDesc(status, pageable);
     }
 
     /**

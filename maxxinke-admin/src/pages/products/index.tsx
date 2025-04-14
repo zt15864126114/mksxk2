@@ -4,6 +4,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-de
 import { productService, Product } from '@/services/productService';
 import ProductForm from './components/ProductForm';
 import dayjs from 'dayjs';
+import { SortOrder } from 'antd/es/table/interface';
 
 const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -145,6 +146,8 @@ const ProductsPage: React.FC = () => {
       dataIndex: 'sort',
       key: 'sort',
       width: 80,
+      sorter: (a: Product, b: Product) => (b.sort || 0) - (a.sort || 0),
+      defaultSortOrder: 'descend' as SortOrder,
     },
     {
       title: '状态',
@@ -158,6 +161,11 @@ const ProductsPage: React.FC = () => {
       dataIndex: 'createTime',
       key: 'createTime',
       width: 180,
+      sorter: (a: Product, b: Product) => {
+        if (!a.createTime || !b.createTime) return 0;
+        return new Date(a.createTime).getTime() - new Date(b.createTime).getTime();
+      },
+      defaultSortOrder: 'descend' as SortOrder,
       render: (createTime: string) => dayjs(createTime).format('YYYY-MM-DD HH:mm:ss'),
     },
     {

@@ -1,9 +1,12 @@
 package com.maxxinke.entity;
 
+import com.maxxinke.converter.ProductSpecificationConverter;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -23,8 +26,9 @@ public class Product {
     @Column(columnDefinition = "TEXT")
     private String description;
     
-    @Column(columnDefinition = "TEXT")
-    private String specification;
+    @Column(columnDefinition = "JSON")
+    @Convert(converter = ProductSpecificationConverter.class)
+    private List<ProductSpecification> specifications;
     
     @Column(columnDefinition = "TEXT")
     private String application;
@@ -53,6 +57,9 @@ public class Product {
         updateTime = LocalDateTime.now();
         if (views == null) {
             views = 0L;
+        }
+        if (specifications == null) {
+            specifications = new ArrayList<>();
         }
     }
     

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Select, Pagination, Empty, Spin } from 'antd';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { productService } from '../services/productService';
+import { productService, CategoryStat } from '../services/productService';
 
 const { Option } = Select;
 
@@ -54,7 +54,7 @@ const ProductCard = styled(Card)`
 
 const ProductList: React.FC = () => {
   const [products, setProducts] = useState<any[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<CategoryStat[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const navigate = useNavigate();
@@ -121,8 +121,8 @@ const ProductList: React.FC = () => {
             style={{ width: 200 }}
           >
             <Option value="all">全部分类</Option>
-            {categories.map(category => (
-              <Option key={category} value={category}>{category}</Option>
+            {categories.map(cat => (
+              <Option key={cat.category} value={cat.category}>{cat.category}</Option>
             ))}
           </Select>
         </FilterBar>

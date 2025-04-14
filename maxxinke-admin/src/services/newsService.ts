@@ -1,7 +1,25 @@
-import { newsAPI } from './api';
-import type { News } from '../types/news';
+import request from '@/utils/request';
 
-export interface NewsResponse {
+export interface News {
+  id: number;
+  title: string;
+  type: string;
+  content: string;
+  summary: string;
+  image: string;
+  status: number;
+  createTime: string;
+  updateTime: string;
+}
+
+export interface NewsListParams {
+  page?: number;
+  pageSize?: number;
+  type?: string;
+  status?: number;
+}
+
+export interface NewsListResponse {
   content: News[];
   totalElements: number;
   totalPages: number;
@@ -9,40 +27,42 @@ export interface NewsResponse {
   number: number;
 }
 
-export const getNews = (params: any) => {
-  return newsAPI.getNewsList(params);
+export const getNews = async (params?: NewsListParams) => {
+  const adjustedParams = params ? {
+    ...params,
+    page: (params.page || 1) - 1, // 将页码减1以适配Spring Boot的分页
+    size: params.pageSize
+  } : undefined;
+  
+  const response = await request.get<NewsListResponse>('/news', { 
+    params: adjustedParams
+  });
+  return response;
 };
 
 export const getNewsById = async (id: string) => {
-  try {
-    const response = await newsAPI.getNewsItem(id);
-    return response;
-  } catch (error) {
-    console.error('获取新闻详情失败:', error);
-    throw error;
-  }
+  const response = await request.get<News>(`/news/${id}`);
+  return response;
 };
 
-export const createNews = async (data: FormData) => {
-  try {
-    const response = await newsAPI.createNewsItem(data);
-    return response;
-  } catch (error) {
-    console.error('创建新闻失败:', error);
-    throw error;
-  }
+export const createNews = async (formData: FormData) => {
+  const response = await request.post<News>('/news', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response;
 };
 
-export const updateNews = async (id: string, data: FormData) => {
-  try {
-    const response = await newsAPI.updateNewsItem(id, data);
-    return response;
-  } catch (error) {
-    console.error('更新新闻失败:', error);
-    throw error;
-  }
+export const updateNews = async (id: string, formData: FormData) => {
+  const response = await request.put<News>(`/news/${id}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response;
 };
 
-export const deleteNews = (id: string) => {
-  return newsAPI.deleteNewsItem(id);
+export const deleteNews = async (id: string) => {
+  await request.delete(`/news/${id}`);
 }; 

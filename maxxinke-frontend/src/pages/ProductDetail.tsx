@@ -1,134 +1,171 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Row, Col, Spin, Image, Typography, Breadcrumb } from 'antd';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Card, Row, Col, Spin, Typography, Divider, Table, Button } from 'antd';
 import styled from 'styled-components';
-import api from '../services/api';
+import { ArrowLeftOutlined } from '@ant-design/icons';
+import { productService, Product, ProductSpecification } from '../services/productService';
+import { productStatsService } from '../services/productStatsService';
 
 const { Title, Paragraph } = Typography;
 
-interface Product {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  category: string;
-  content: string;
-  createTime: string;
-  updateTime: string;
-}
-
-const PageWrapper = styled.div`
-  padding: 100px 20px 50px;
+const Container = styled.div`
+  padding: 24px;
   max-width: 1200px;
   margin: 0 auto;
 `;
 
-const StyledBreadcrumb = styled(Breadcrumb)`
+const BackButton = styled(Button)`
   margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  
+  .anticon {
+    margin-right: 8px;
+  }
 `;
 
-const ProductImage = styled(Image)`
+const ProductImage = styled.img`
   width: 100%;
-  max-height: 400px;
+  height: 400px;
   object-fit: cover;
   border-radius: 8px;
 `;
 
-const ContentWrapper = styled.div`
+const ProductInfo = styled.div`
   padding: 24px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 `;
 
-const LoadingWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
+const SpecificationSection = styled.div`
+  margin-top: 24px;
+
+  .ant-table-thead > tr > th {
+    background: #f7941d;
+    color: white;
+    font-weight: bold;
+  }
+
+  .ant-table-tbody > tr > td {
+    padding: 12px 16px;
+  }
+
+  .ant-table {
+    border: 1px solid #f0f0f0;
+  }
 `;
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProduct = async () => {
+      if (!id) return;
+      
+      setLoading(true);
       try {
-        const response = await api.get(`/products/${id}`);
-        setProduct(response.data);
-        
-        // 记录产品访问量
-        await api.post(`/product-stats/${id}/increment-views`);
+        const data = await productService.getProductById(Number(id));
+        setProduct(data);
+        // 记录产品访问
+        await productStatsService.incrementViews(Number(id));
       } catch (error) {
-        console.error('获取产品详情失败:', error);
+        console.error('Error fetching product:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    if (id) {
-      fetchProduct();
-    }
+    fetchProduct();
   }, [id]);
+
+  const handleBack = () => {
+    navigate('/products');
+  };
+
+  const specColumns = [
+    {
+      title: '参数',
+      dataIndex: 'name',
+      key: 'name',
+      width: '30%',
+    },
+    {
+      title: '指标',
+      dataIndex: 'value',
+      key: 'value',
+      width: '50%',
+      render: (text: string, record: ProductSpecification) => {
+        if (record.unit) {
+          return `${text} ${record.unit}`;
+        }
+        return text;
+      },
+    },
+  ];
 
   if (loading) {
     return (
-      <PageWrapper>
-        <LoadingWrapper>
+      <Container>
+        <div style={{ textAlign: 'center', padding: '40px' }}>
           <Spin size="large" />
-        </LoadingWrapper>
-      </PageWrapper>
+        </div>
+      </Container>
     );
   }
 
   if (!product) {
     return (
-      <PageWrapper>
+      <Container>
         <Title level={3}>产品不存在</Title>
-        <Link to="/products">返回产品列表</Link>
-      </PageWrapper>
+      </Container>
     );
   }
 
   return (
-    <PageWrapper>
-      <StyledBreadcrumb>
-        <Breadcrumb.Item>
-          <Link to="/">首页</Link>
-        </Breadcrumb.Item>
-        <Breadcrumb.Item>
-          <Link to="/products">产品中心</Link>
-        </Breadcrumb.Item>
-        <Breadcrumb.Item>{product.title}</Breadcrumb.Item>
-      </StyledBreadcrumb>
+    <Container>
+      <BackButton icon={<ArrowLeftOutlined />} onClick={handleBack}>
+        返回产品列表
+      </BackButton>
+      
+      <Card bordered={false}>
+        <Row gutter={[32, 32]}>
+          <Col xs={24} md={12}>
+            <ProductImage 
+              src={product.image || '/placeholder.png'} 
+              alt={product.name} 
+            />
+          </Col>
+          <Col xs={24} md={12}>
+            <ProductInfo>
+              <Title level={2}>{product.name}</Title>
+              <Divider />
+              <Paragraph>
+                <strong>产品类别：</strong> {product.category}
+              </Paragraph>
+              <Divider />
+              <Title level={4}>产品描述</Title>
+              <Paragraph>{product.description}</Paragraph>
 
-      <Row gutter={[32, 32]}>
-        <Col xs={24} md={12}>
-          <ProductImage
-            src={product.image || '/default-product.jpg'}
-            alt={product.title}
-            fallback="/default-product.jpg"
-          />
-        </Col>
-        <Col xs={24} md={12}>
-          <ContentWrapper>
-            <Title level={2}>{product.title}</Title>
-            <Paragraph type="secondary">
-              分类：{product.category}
-            </Paragraph>
-            <Paragraph strong>
-              产品描述：
-            </Paragraph>
-            <Paragraph>{product.description}</Paragraph>
-            <Title level={3}>产品详情</Title>
-            <div dangerouslySetInnerHTML={{ __html: product.content }} />
-          </ContentWrapper>
-        </Col>
-      </Row>
-    </PageWrapper>
+              <SpecificationSection>
+                <Title level={4}>产品规格</Title>
+                <Table
+                  columns={specColumns}
+                  dataSource={product.specifications || []}
+                  pagination={false}
+                  rowKey="name"
+                  bordered
+                />
+              </SpecificationSection>
+
+              <Divider />
+              <Title level={4}>应用领域</Title>
+              <Paragraph>{product.application}</Paragraph>
+            </ProductInfo>
+          </Col>
+        </Row>
+      </Card>
+    </Container>
   );
 };
 

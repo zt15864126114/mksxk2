@@ -14,6 +14,7 @@ import Dashboard from './pages/dashboard'
 import Login from './pages/auth/Login'
 import NotFound from './pages/error/NotFound'
 import ServerError from './pages/error/ServerError'
+import AboutUs from './pages/AboutUs'
 
 const routes: RouteObject[] = [
   {
@@ -35,6 +36,10 @@ const routes: RouteObject[] = [
       {
         path: 'dashboard',
         element: <Dashboard />,
+      },
+      {
+        path: 'about-us',
+        element: <AboutUs />,
       },
       {
         path: 'products',
@@ -64,4 +69,4 @@ const routes: RouteObject[] = [
   },
 ]
 
-export default routes 
+export default routes

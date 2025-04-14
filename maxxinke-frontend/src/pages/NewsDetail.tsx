@@ -1,58 +1,81 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Typography, Spin, Tag, Breadcrumb } from 'antd';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Spin, Button, Empty } from 'antd';
+import { ArrowLeftOutlined, CalendarOutlined, EyeOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-import api from '../services/api';
+import { newsService, News } from '../services/newsService';
+import dayjs from 'dayjs';
 
-const { Title, Paragraph } = Typography;
+const NewsDetailWrapper = styled.section`
+  padding: 80px 0;
+  background: #f8f9fa;
+`;
 
-interface NewsItem {
-  id: number;
-  title: string;
-  content: string;
-  type: string;
-  image: string;
-  createTime: string;
-  views: number;
-}
-
-const PageWrapper = styled.div`
-  padding: 100px 20px 50px;
-  max-width: 1200px;
+const Container = styled.div`
+  max-width: 1000px;
   margin: 0 auto;
+  padding: 0 20px;
 `;
 
-const StyledBreadcrumb = styled(Breadcrumb)`
+const BackButton = styled(Button)`
   margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  
+  .anticon {
+    margin-right: 8px;
+  }
 `;
 
-const ContentWrapper = styled.div`
-  padding: 32px;
+const NewsCard = styled.div`
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  padding: 40px;
 `;
 
-const NewsImage = styled.img`
-  width: 100%;
-  max-height: 400px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 24px;
+const NewsHeader = styled.div`
+  text-align: center;
+  margin-bottom: 40px;
+`;
+
+const NewsTitle = styled.h1`
+  font-size: 32px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 16px;
 `;
 
 const NewsMeta = styled.div`
-  margin: 16px 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #999;
   font-size: 14px;
-  
-  .tag {
-    margin-right: 16px;
+  margin-bottom: 24px;
+
+  span {
+    display: flex;
+    align-items: center;
+    margin: 0 16px;
+
+    .anticon {
+      margin-right: 8px;
+      font-size: 16px;
+    }
   }
+`;
+
+const NewsImage = styled.div`
+  margin-bottom: 32px;
+  border-radius: 8px;
+  overflow: hidden;
   
-  .date {
-    margin-right: 16px;
+  img {
+    width: 100%;
+    max-height: 500px;
+    object-fit: cover;
   }
 `;
 
@@ -61,34 +84,36 @@ const NewsContent = styled.div`
   line-height: 1.8;
   color: #333;
   
-  img {
-    max-width: 100%;
-    height: auto;
-    margin: 16px 0;
-  }
-  
   p {
     margin-bottom: 16px;
   }
 `;
 
-const LoadingWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
+const LoadingContainer = styled.div`
+  text-align: center;
+  padding: 80px 0;
+
+  .ant-spin {
+    .ant-spin-dot-item {
+      background-color: #1890ff;
+    }
+  }
 `;
 
 const NewsDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [news, setNews] = useState<News | null>(null);
   const [loading, setLoading] = useState(true);
-  const [news, setNews] = useState<NewsItem | null>(null);
 
   useEffect(() => {
-    const fetchNews = async () => {
+    const fetchNewsDetail = async () => {
+      if (!id) return;
+      
       try {
-        const response = await api.get(`/news/${id}`);
-        setNews(response.data);
+        setLoading(true);
+        const data = await newsService.getNewsById(parseInt(id));
+        setNews(data);
       } catch (error) {
         console.error('获取新闻详情失败:', error);
       } finally {
@@ -96,57 +121,70 @@ const NewsDetail: React.FC = () => {
       }
     };
 
-    if (id) {
-      fetchNews();
-    }
+    fetchNewsDetail();
   }, [id]);
+
+  const handleBack = () => {
+    navigate('/news');
+  };
 
   if (loading) {
     return (
-      <PageWrapper>
-        <LoadingWrapper>
-          <Spin size="large" />
-        </LoadingWrapper>
-      </PageWrapper>
+      <NewsDetailWrapper>
+        <Container>
+          <LoadingContainer>
+            <Spin size="large" />
+          </LoadingContainer>
+        </Container>
+      </NewsDetailWrapper>
     );
   }
 
   if (!news) {
     return (
-      <PageWrapper>
-        <Title level={3}>新闻不存在</Title>
-        <Link to="/news">返回新闻列表</Link>
-      </PageWrapper>
+      <NewsDetailWrapper>
+        <Container>
+          <BackButton icon={<ArrowLeftOutlined />} onClick={handleBack}>
+            返回新闻列表
+          </BackButton>
+          <Empty description="新闻不存在或已被删除" />
+        </Container>
+      </NewsDetailWrapper>
     );
   }
 
   return (
-    <PageWrapper>
-      <StyledBreadcrumb>
-        <Breadcrumb.Item>
-          <Link to="/">首页</Link>
-        </Breadcrumb.Item>
-        <Breadcrumb.Item>
-          <Link to="/news">新闻动态</Link>
-        </Breadcrumb.Item>
-        <Breadcrumb.Item>{news.title}</Breadcrumb.Item>
-      </StyledBreadcrumb>
-
-      <ContentWrapper>
-        <Title level={2}>{news.title}</Title>
-        <NewsMeta>
-          <Tag color="blue" className="tag">{news.type}</Tag>
-          <span className="date">
-            {new Date(news.createTime).toLocaleDateString()}
-          </span>
-          <span className="views">阅读量：{news.views}</span>
-        </NewsMeta>
-        {news.image && (
-          <NewsImage src={news.image} alt={news.title} />
-        )}
-        <NewsContent dangerouslySetInnerHTML={{ __html: news.content }} />
-      </ContentWrapper>
-    </PageWrapper>
+    <NewsDetailWrapper>
+      <Container>
+        <BackButton icon={<ArrowLeftOutlined />} onClick={handleBack}>
+          返回新闻列表
+        </BackButton>
+        
+        <NewsCard>
+          <NewsHeader>
+            <NewsTitle>{news.title}</NewsTitle>
+            <NewsMeta>
+              <span>
+                <CalendarOutlined />
+                {dayjs(news.createTime).format('YYYY-MM-DD')}
+              </span>
+              <span>
+                <EyeOutlined />
+                {news.views} 浏览
+              </span>
+            </NewsMeta>
+          </NewsHeader>
+          
+          {news.image && (
+            <NewsImage>
+              <img src={news.image} alt={news.title} />
+            </NewsImage>
+          )}
+          
+          <NewsContent dangerouslySetInnerHTML={{ __html: news.content }} />
+        </NewsCard>
+      </Container>
+    </NewsDetailWrapper>
   );
 };
 

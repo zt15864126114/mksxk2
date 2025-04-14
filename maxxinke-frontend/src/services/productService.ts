@@ -1,14 +1,23 @@
 import api from './api';
+import { AxiosResponse } from 'axios';
+
+export interface ProductSpecification {
+  name: string;
+  value: string;
+  unit?: string;
+}
 
 export interface Product {
   id: number;
-  title: string;
+  name: string;
   description: string;
   image: string;
   category: string;
-  status: number;
+  specifications: ProductSpecification[];
+  application: string;
   createTime: string;
   updateTime: string;
+  status: number;
 }
 
 export interface ProductListResponse {
@@ -26,32 +35,42 @@ export interface ProductListParams {
   status?: number;
 }
 
+export interface CategoryStat {
+  category: string;
+  count: number;
+}
+
 export const productService = {
   // 获取产品列表
   getProducts: async (params: ProductListParams): Promise<ProductListResponse> => {
-    const { data } = await api.get<ProductListResponse>('/products', {
-      params
+    const adjustedParams = {
+      ...params,
+      page: params.page - 1,  // 将页码减1以适配Spring Boot的分页
+      size: params.pageSize   // 使用pageSize作为size参数
+    };
+    const response = await api.get('/products', {
+      params: adjustedParams
     });
-    return data;
+    return response;
   },
 
   // 获取产品详情
   getProductById: async (id: number): Promise<Product> => {
-    const { data } = await api.get<Product>(`/products/${id}`);
-    return data;
+    const response = await api.get(`/products/${id}`);
+    return response;
   },
 
-  // 获取产品分类
-  getCategories: async (): Promise<string[]> => {
-    const { data } = await api.get<string[]>('/products/categories');
-    return data;
+  // 获取产品分类统计
+  getCategories: async (): Promise<CategoryStat[]> => {
+    const response = await api.get('/product-stats/categories');
+    return response;
   },
 
-  // 获取最新产品
-  getRecentProducts: async (size: number = 3): Promise<Product[]> => {
-    const { data } = await api.get<Product[]>('/products/recent', {
-      params: { size }
+  // 获取热门产品
+  getHotProducts: async (size: number = 3): Promise<Product[]> => {
+    const response = await api.get('/product-stats/hot', {
+      params: { limit: size }
     });
-    return data;
+    return response;
   }
-}; 
+};

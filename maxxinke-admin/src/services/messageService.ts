@@ -1,10 +1,15 @@
 import { messagesAPI } from './api';
 import type { Message } from '../types/message';
+import type { PaginationParams, PaginatedResponse } from './api';
 
 export const messageService = {
-  getMessages: async (params?: any) => {
+  getMessages: async (params?: PaginationParams) => {
     try {
-      const response = await messagesAPI.getMessages(params);
+      const adjustedParams = params ? {
+        ...params,
+        page: params.page - 1  // 将页码减1以适配Spring Boot的分页
+      } : undefined;
+      const response = await messagesAPI.getMessages(adjustedParams);
       if (response && response.content) {
         return {
           data: {

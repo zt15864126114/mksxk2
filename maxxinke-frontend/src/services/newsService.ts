@@ -4,10 +4,13 @@ export interface News {
   id: number;
   title: string;
   content: string;
+  summary: string;
+  image: string;
   type: string;
   createTime: string;
+  updateTime: string;
+  status: number;
   views: number;
-  image?: string;
 }
 
 export interface NewsListResponse {
@@ -27,29 +30,36 @@ export interface NewsListParams {
 
 export const newsService = {
   // 获取新闻列表
-  getNewsList: async (params: any) => {
-    const { data } = await api.get('/news', { params });
-    return data;
+  getNews: async (params: NewsListParams): Promise<NewsListResponse> => {
+    const adjustedParams = {
+      ...params,
+      page: params.page - 1,  // 将页码减1以适配Spring Boot的分页
+      size: params.pageSize   // 使用pageSize作为size参数
+    };
+    const response = await api.get('/news', {
+      params: adjustedParams
+    });
+    return response;
   },
 
   // 获取新闻详情
   getNewsById: async (id: number): Promise<News> => {
-    const { data } = await api.get(`/news/${id}`);
-    return data;
+    const response = await api.get<News>(`/news/${id}`);
+    return response;
   },
 
   // 获取新闻类型
   getNewsTypes: async (): Promise<string[]> => {
-    const { data } = await api.get<string[]>('/news/types');
-    return data;
+    const response = await api.get<string[]>('/news/types');
+    return response;
   },
 
   // 获取最新新闻
   getRecentNews: async (size: number = 3): Promise<News[]> => {
-    const { data } = await api.get<News[]>('/news/recent', {
+    const response = await api.get<News[]>('/news/recent', {
       params: { size }
     });
-    return data;
+    return response;
   },
 
   // 创建新闻

@@ -1,7 +1,9 @@
 package com.maxxinke.dto;
 
+import com.maxxinke.entity.ProductSpecification;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 产品数据传输对象
@@ -18,7 +20,7 @@ public class ProductDTO {
     
     private String description; // 产品描述
     
-    private String specification; // 产品规格
+    private List<ProductSpecification> specifications; // 产品规格列表
     
     private String application; // 应用场景
     

@@ -7,6 +7,7 @@ import {
   EnvironmentOutlined,
   GlobalOutlined
 } from '@ant-design/icons';
+import { messageService } from '../services/messageService';
 
 const { Title, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -46,12 +47,17 @@ const Contact: React.FC = () => {
   const handleSubmit = async (values: any) => {
     try {
       setLoading(true);
-      // TODO: 实现消息提交接口
-      console.log('提交的表单数据:', values);
-      message.success('消息已提交，我们会尽快与您联系！');
+      await messageService.create({
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        content: values.message
+      });
+      message.success('留言提交成功，我们会尽快与您联系！');
       form.resetFields();
     } catch (error) {
       message.error('提交失败，请稍后重试');
+      console.error('留言提交失败:', error);
     } finally {
       setLoading(false);
     }
@@ -161,23 +167,6 @@ const Contact: React.FC = () => {
                   </Button>
                 </Form.Item>
               </Form>
-            </Card>
-          </Col>
-        </Row>
-
-        <Row style={{ marginTop: 40 }}>
-          <Col span={24}>
-            <Card title="公司地图">
-              {/* TODO: 添加地图组件 */}
-              <div style={{ 
-                background: '#eee', 
-                height: 400, 
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                地图组件待添加
-              </div>
             </Card>
           </Col>
         </Row>

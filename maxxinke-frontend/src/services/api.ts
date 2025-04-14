@@ -1,5 +1,15 @@
 import axios from 'axios';
 
+declare module 'axios' {
+  export interface AxiosInstance {
+    get<T = any>(url: string, config?: any): Promise<T>;
+    post<T = any>(url: string, data?: any, config?: any): Promise<T>;
+    put<T = any>(url: string, data?: any, config?: any): Promise<T>;
+    delete<T = any>(url: string, config?: any): Promise<T>;
+  }
+}
+
+// 创建自定义的axios实例，直接返回response.data
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3002/api',
   timeout: 10000,
@@ -22,6 +32,7 @@ api.interceptors.request.use(
 // 响应拦截器
 api.interceptors.response.use(
   (response) => {
+    // 直接返回响应数据
     return response.data;
   },
   (error) => {
@@ -47,5 +58,12 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// 重写get方法的类型
+const originalGet = api.get;
+api.get = async function<T>(url: string, config?: any): Promise<T> {
+  const response = await originalGet(url, config);
+  return response as T;
+};
 
 export default api; 

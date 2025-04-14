@@ -28,10 +28,29 @@ const StyledHeader = styled(AntHeader)`
     flex: 1;
     border: none;
     background: transparent;
+    line-height: 78px;
+    
+    .ant-menu-item {
+      padding: 0 20px;
+      font-size: 16px;
+      
+      a {
+        color: rgba(0, 0, 0, 0.85);
+        &:hover {
+          color: #1890ff;
+        }
+      }
+    }
   }
 
   .contact-btn {
     margin-left: 20px;
+    height: 40px;
+    padding: 0 24px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
   }
 
   @media (max-width: 768px) {

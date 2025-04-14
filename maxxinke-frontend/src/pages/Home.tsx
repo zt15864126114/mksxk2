@@ -1,10 +1,8 @@
 import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import Header from '../components/layout/Header';
 import Banner from '../components/home/Banner';
 import Products from '../components/home/Products';
 import News from '../components/home/News';
-import Footer from '../components/layout/Footer';
 import api from '../services/api';
 
 const HomeWrapper = styled.div`
@@ -51,13 +49,11 @@ const Home: React.FC = () => {
 
   return (
     <HomeWrapper>
-      <Header />
       <MainContent>
         <Banner />
         <Products />
         <News />
       </MainContent>
-      <Footer />
     </HomeWrapper>
   );
 };

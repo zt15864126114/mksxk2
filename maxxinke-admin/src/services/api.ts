@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { message } from 'antd';
+import type { Product, ProductListParams, ProductSpecification } from './productService';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api';
 
@@ -8,10 +9,7 @@ console.log('API服务初始化, baseURL:', API_BASE_URL);
 // 创建axios实例
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 5000, // 缩短超时时间，提高响应速度
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  timeout: 10000,
 });
 
 // 请求拦截器
@@ -39,7 +37,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => {
     console.log(`请求成功: ${response.config.url}`, response.status);
-    return response;
+    return response.data;
   },
   (error) => {
     console.error('请求失败:', error);
@@ -93,23 +91,8 @@ const callApi = async <T>(apiFunc: () => Promise<T>, fallback: T | null = null):
 };
 
 // 封装通用请求方法
-export const request = async <T = any>(config: AxiosRequestConfig): Promise<T> => {
-  try {
-    // 处理分页参数，将page减1以匹配后端从0开始的分页
-    if (config.params && typeof config.params.page === 'number') {
-      config.params.page = config.params.page - 1;
-    }
-    const response = await api.request(config);
-    console.log('请求URL:', config.url, '响应:', response);
-    // 如果是文件上传请求，返回完整响应
-    if (config.headers?.['Content-Type'] === 'multipart/form-data') {
-      return response as T;
-    }
-    return response.data;
-  } catch (error) {
-    console.error('请求失败:', error);
-    throw error;
-  }
+export const request = <T>(config: AxiosRequestConfig): Promise<T> => {
+  return api.request(config);
 };
 
 // 用户相关API
@@ -124,37 +107,59 @@ export const authAPI = {
 
 // 产品相关API
 export const productsAPI = {
-  getProducts: (params: any) => request<ApiResponse<any>>({
-    url: '/products',
-    method: 'GET',
-    params,
-  }),
-  getProduct: (id: string) => request<ApiResponse<any>>({
-    url: `/products/${id}`,
-    method: 'GET',
-  }),
-  createProduct: (data: FormData) => request<ApiResponse<any>>({
-    url: '/products',
-    method: 'POST',
-    data,
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-    transformRequest: [(data) => data],
-  }),
-  updateProduct: (id: string, data: FormData) => request<ApiResponse<any>>({
-    url: `/products/${id}`,
-    method: 'POST',
-    data,
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-    transformRequest: [(data) => data],
-  }),
-  deleteProduct: (id: string) => request<ApiResponse<void>>({
-    url: `/products/${id}`,
-    method: 'DELETE',
-  }),
+  getProducts: (params: ProductListParams) => 
+    request<PaginatedResponse<Product>>({
+      url: '/products',
+      method: 'GET',
+      params,
+    }),
+
+  getProduct: (id: number) => 
+    request<Product>({
+      url: `/products/${id}`,
+      method: 'GET',
+    }),
+
+  createProduct: (data: FormData) => 
+    request<Product>({
+      url: '/products',
+      method: 'POST',
+      data,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      transformRequest: [(data) => data],
+    }),
+
+  updateProduct: (id: number, data: FormData) => 
+    request<Product>({
+      url: `/products/${id}`,
+      method: 'POST',
+      data,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      transformRequest: [(data) => data],
+    }),
+
+  deleteProduct: (id: number) => 
+    request<void>({
+      url: `/products/${id}`,
+      method: 'DELETE',
+    }),
+
+  updateSort: (id: number, sort: number) => 
+    request<Product>({
+      url: `/products/${id}/sort`,
+      method: 'PUT',
+      data: { sort },
+    }),
+
+  getAllProducts: () => 
+    request<Product[]>({
+      url: '/products/all',
+      method: 'GET',
+    }),
 };
 
 // 新闻相关API
@@ -240,7 +245,6 @@ export const messagesAPI = {
 export interface PaginationParams {
   page: number;
   size: number;
-  sort?: string;
 }
 
 export interface ApiResponse<T> {
@@ -257,18 +261,4 @@ export interface PaginatedResponse<T> {
   number: number;
 }
 
-export interface Product {
-  id: number;
-  name: string;
-  category: string;
-  description: string;
-  specification: string;
-  application: string;
-  image: string;
-  sort: number;
-  status: number;
-  createTime: string;
-  updateTime: string;
-}
-
-export default api; 
+export default request; 
