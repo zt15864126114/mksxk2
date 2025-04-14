@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Statistic, List, Tag, Button, Spin, message } from 'antd';
+import { Card, Row, Col, Statistic, List, Tag, Button, Spin, App, Radio, Tabs } from 'antd';
 import { Line, Column } from '@ant-design/plots';
 import {
   ShoppingOutlined,
@@ -17,6 +17,26 @@ import type {
   RecentNews 
 } from '@/services/dashboardService';
 
+// 格式化百分比数字，限制小数位数为2位
+const formatPercentage = (value: number): string => {
+  // 处理异常情况
+  if (value > 1000) return '+999%';
+  if (value < -1000) return '-999%';
+  
+  // 四舍五入到2位小数
+  const formattedValue = Math.round(value * 100) / 100;
+  return formattedValue >= 0 ? `+${formattedValue}%` : `${formattedValue}%`;
+};
+
+// 确定百分比显示的颜色
+const getTagColor = (value: number): string => {
+  if (value === 0) return 'blue'; // 零增长
+  return value > 0 ? 'green' : 'red'; // 正增长为绿色，负增长为红色
+};
+
+// 访问时间类型
+type TimeRangeType = 'day' | 'month' | 'year';
+
 const DashboardPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -24,6 +44,18 @@ const DashboardPage: React.FC = () => {
   const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
   const [recentMessages, setRecentMessages] = useState<RecentMessage[]>([]);
   const [recentNews, setRecentNews] = useState<RecentNews[]>([]);
+  const [timeRange, setTimeRange] = useState<TimeRangeType>('month');
+  const { message } = App.useApp();
+
+  // 根据选定的时间范围处理访问数据
+  const processVisitData = (data: VisitData[]): VisitData[] => {
+    if (!data || data.length === 0) return [];
+    
+    return data.map(item => ({
+      date: item.date || '无数据',
+      value: typeof item.value === 'number' ? item.value : 0
+    }));
+  };
 
   // 获取所有仪表盘数据
   const fetchDashboardData = async () => {
@@ -31,23 +63,23 @@ const DashboardPage: React.FC = () => {
       setLoading(true);
       const [
         statsData,
-        visitData,
         categoryData,
         messagesData,
         newsData
       ] = await Promise.all([
         dashboardAPI.getStats(),
-        dashboardAPI.getVisitData(),
         dashboardAPI.getCategoryData(),
         dashboardAPI.getRecentMessages(),
         dashboardAPI.getRecentNews()
       ]);
 
       setStats(statsData);
-      setVisitData(visitData);
       setCategoryData(categoryData);
       setRecentMessages(messagesData);
       setRecentNews(newsData);
+      
+      // 根据当前选择的时间范围获取相应的访问数据
+      await fetchVisitData(timeRange);
     } catch (error) {
       console.error('获取仪表盘数据失败:', error);
       message.error('获取仪表盘数据失败');
@@ -56,9 +88,38 @@ const DashboardPage: React.FC = () => {
     }
   };
 
+  // 获取访问数据
+  const fetchVisitData = async (type: TimeRangeType) => {
+    try {
+      let data;
+      switch (type) {
+        case 'day':
+          data = await dashboardAPI.getDailyVisitData();
+          break;
+        case 'year':
+          data = await dashboardAPI.getYearlyVisitData();
+          break;
+        default:
+          data = await dashboardAPI.getVisitData();
+          break;
+      }
+      setVisitData(data);
+    } catch (error) {
+      console.error(`获取${type}访问数据失败:`, error);
+      message.error(`获取${type}访问数据失败`);
+    }
+  };
+
   useEffect(() => {
     fetchDashboardData();
   }, []);
+
+  // 处理时间范围切换
+  const handleTimeRangeChange = (e: any) => {
+    const newTimeRange = e.target.value as TimeRangeType;
+    setTimeRange(newTimeRange);
+    fetchVisitData(newTimeRange);
+  };
 
   if (loading || !stats) {
     return (
@@ -73,65 +134,78 @@ const DashboardPage: React.FC = () => {
     );
   }
 
+  // 获取处理后的访问数据
+  const processedVisitData = processVisitData(visitData);
+
   return (
-    <div style={{ padding: '24px' }}>
+    <div style={{ padding: '24px', overflowY: 'auto', height: 'calc(100vh - 64px)' }}>
       {/* 统计卡片 */}
-      <Row gutter={[24, 24]}>
-        <Col xs={24} sm={12} lg={6}>
-          <Card bordered={false} hoverable>
+      <Row gutter={[16, 16]}>
+        <Col xs={24} sm={12} lg={8} xl={4}>
+          <Card variant="borderless" hoverable>
             <Statistic
               title="产品总数"
               value={stats.totalProducts}
               prefix={<ShoppingOutlined />}
               valueStyle={{ color: '#1890ff' }}
               suffix={
-                <Tag color={stats.productGrowth >= 0 ? 'blue' : 'red'}>
-                  {stats.productGrowth >= 0 ? '+' : ''}{stats.productGrowth}%
+                <Tag color={getTagColor(stats.productGrowth)}>
+                  {formatPercentage(stats.productGrowth)}
                 </Tag>
               }
             />
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card bordered={false} hoverable>
+        <Col xs={24} sm={12} lg={8} xl={4}>
+          <Card variant="borderless" hoverable>
             <Statistic
               title="新闻数量"
               value={stats.totalNews}
               prefix={<FileTextOutlined />}
               valueStyle={{ color: '#52c41a' }}
               suffix={
-                <Tag color={stats.newsGrowth >= 0 ? 'green' : 'red'}>
-                  {stats.newsGrowth >= 0 ? '+' : ''}{stats.newsGrowth}%
+                <Tag color={getTagColor(stats.newsGrowth)}>
+                  {formatPercentage(stats.newsGrowth)}
                 </Tag>
               }
             />
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card bordered={false} hoverable>
+        <Col xs={24} sm={12} lg={8} xl={4}>
+          <Card variant="borderless" hoverable>
             <Statistic
               title="消息数量"
               value={stats.totalMessages}
               prefix={<MessageOutlined />}
               valueStyle={{ color: '#faad14' }}
               suffix={
-                <Tag color={stats.messageGrowth >= 0 ? 'orange' : 'red'}>
-                  {stats.messageGrowth >= 0 ? '+' : ''}{stats.messageGrowth}%
+                <Tag color={getTagColor(stats.messageGrowth)}>
+                  {formatPercentage(stats.messageGrowth)}
                 </Tag>
               }
             />
           </Card>
         </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card bordered={false} hoverable>
+        <Col xs={24} sm={12} lg={8} xl={6}>
+          <Card variant="borderless" hoverable>
             <Statistic
               title="总访问量"
-              value={stats.totalViews}
+              value={stats.totalAllViews || 0}
               prefix={<EyeOutlined />}
               valueStyle={{ color: '#722ed1' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={8} xl={6}>
+          <Card variant="borderless" hoverable>
+            <Statistic
+              title="今日访问量"
+              value={stats.totalViews}
+              prefix={<EyeOutlined style={{ transform: 'rotate(45deg)' }} />}
+              valueStyle={{ color: '#13c2c2' }}
               suffix={
-                <Tag color={stats.viewsGrowth >= 0 ? 'purple' : 'red'}>
-                  {stats.viewsGrowth >= 0 ? '+' : ''}{stats.viewsGrowth}%
+                <Tag color={getTagColor(stats.viewsGrowth)}>
+                  {formatPercentage(stats.viewsGrowth)}
                 </Tag>
               }
             />
@@ -140,11 +214,27 @@ const DashboardPage: React.FC = () => {
       </Row>
 
       {/* 图表区域 */}
-      <Row gutter={[24, 24]} style={{ marginTop: '24px' }}>
+      <Row gutter={[16, 16]} style={{ marginTop: '16px' }}>
         <Col xs={24} lg={16}>
-          <Card title="访问量趋势" bordered={false}>
+          <Card 
+            title="访问量趋势" 
+            variant="borderless"
+            extra={
+              <Radio.Group 
+                value={timeRange} 
+                onChange={handleTimeRangeChange}
+                optionType="button" 
+                buttonStyle="solid"
+                size="small"
+              >
+                <Radio.Button value="day">日</Radio.Button>
+                <Radio.Button value="month">月</Radio.Button>
+                <Radio.Button value="year">年</Radio.Button>
+              </Radio.Group>
+            }
+          >
             <Line
-              data={visitData}
+              data={processedVisitData}
               xField="date"
               yField="value"
               smooth
@@ -153,11 +243,26 @@ const DashboardPage: React.FC = () => {
                 shape: 'diamond',
               }}
               color="#1890ff"
+              tooltip={{
+                formatter: (datum: {date: string, value: number}) => {
+                  if (!datum || typeof datum.date !== 'string' || typeof datum.value !== 'number') {
+                    return { name: '访问量', value: '0' };
+                  }
+                  return { 
+                    name: timeRange === 'day' ? '日访问量' : 
+                           timeRange === 'month' ? '月访问量' : '年访问量',
+                    value: datum.value
+                  };
+                }
+              }}
+              yAxis={{
+                min: 0
+              }}
             />
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card title="产品分类统计" bordered={false}>
+          <Card title="产品分类统计" variant="borderless">
             <Column
               data={categoryData}
               xField="category"
@@ -172,11 +277,11 @@ const DashboardPage: React.FC = () => {
       </Row>
 
       {/* 列表区域 */}
-      <Row gutter={[24, 24]} style={{ marginTop: '24px' }}>
+      <Row gutter={[16, 16]} style={{ marginTop: '16px' }}>
         <Col xs={24} lg={12}>
           <Card 
             title="最近消息" 
-            bordered={false}
+            variant="borderless"
             extra={<Button type="link" onClick={() => window.location.href = '/messages'}>查看全部</Button>}
           >
             <List
@@ -201,7 +306,7 @@ const DashboardPage: React.FC = () => {
         <Col xs={24} lg={12}>
           <Card 
             title="最新新闻" 
-            bordered={false}
+            variant="borderless"
             extra={<Button type="link" onClick={() => window.location.href = '/news'}>查看全部</Button>}
           >
             <List

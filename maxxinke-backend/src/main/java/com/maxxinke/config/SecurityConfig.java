@@ -97,10 +97,11 @@ public class SecurityConfig {
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/public/**").permitAll()
                 .antMatchers("/api/messages/**").permitAll()  // 允许消息相关的所有请求
-                .antMatchers("/api/news/**").permitAll()  // 允许消息相关的所有请求
-                .antMatchers("/api/products/**").permitAll()  // 允许消息相关的所有请求
-                .antMatchers("/api/dashboard/**").permitAll()  // 允许消息相关的所有请求
-                .antMatchers("/api/about-us/**").permitAll()  // 允许消息相关的所有请求
+                .antMatchers("/api/news/**").permitAll()
+                .antMatchers("/api/products/**").permitAll()
+                .antMatchers("/api/dashboard/**").permitAll()
+                .antMatchers("/api/about-us/**").permitAll()
+                .antMatchers("/api/system/**").permitAll()
                 .antMatchers("/api/admins/**").hasRole("ADMIN")
                 // Swagger UI paths
                 .antMatchers("/swagger-ui/**",

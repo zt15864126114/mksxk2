@@ -1,7 +1,8 @@
-import React from 'react';
-import { Layout, Row, Col, Input, Button } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Layout, Row, Col, Input, Button, Spin, App } from 'antd';
 import { PhoneOutlined, MailOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
+import { getContactInfo, ContactInfo } from '../../services/systemService';
 
 const { Footer: AntFooter } = Layout;
 
@@ -48,9 +49,66 @@ const StyledFooter = styled(AntFooter)`
       margin-right: 10px;
     }
   }
+  
+  .loading-container {
+    text-align: center;
+    padding: 10px 0;
+  }
 `;
 
 const Footer: React.FC = () => {
+  const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
+  const [loading, setLoading] = useState(false);
+  const { message } = App.useApp();
+
+  useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        setLoading(true);
+        console.log('Footer组件(Layout)：开始获取联系方式数据');
+        
+        const data = await getContactInfo();
+        
+        // 验证数据是否为空对象或所有字段为空字符串
+        const isEmptyData = !data || Object.values(data).every(val => val === '');
+        
+        if (isEmptyData) {
+          console.error('Footer组件(Layout)：获取的联系方式数据为空');
+          // 设置默认数据，确保页面显示内容
+          setContactInfo({
+            tel: '400-123-4567',
+            mobile: '138 8888 8888',
+            email: 'contact@maxxinke.com',
+            serviceEmail: 'service@maxxinke.com',
+            address: '上海市浦东新区张江高科技园区',
+            postcode: '518000',
+            website: 'www.maxxinke.com',
+            wechat: '麦克斯鑫科'
+          });
+        } else {
+          setContactInfo(data);
+        }
+      } catch (error) {
+        console.error('Footer组件(Layout)：获取联系方式失败:', error);
+        // 设置默认数据，确保页面显示内容
+        setContactInfo({
+          tel: '400-123-4567',
+          mobile: '138 8888 8888',
+          email: 'contact@maxxinke.com',
+          serviceEmail: 'service@maxxinke.com',
+          address: '上海市浦东新区张江高科技园区',
+          postcode: '518000',
+          website: 'www.maxxinke.com',
+          wechat: '麦克斯鑫科'
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchContactInfo();
+  }, []);
+
   return (
     <StyledFooter>
       <div className="footer-content">
@@ -61,18 +119,28 @@ const Footer: React.FC = () => {
           </Col>
           <Col xs={24} sm={12} md={8}>
             <h3 className="footer-title">联系方式</h3>
-            <div className="contact-item">
-              <PhoneOutlined />
-              <span>400-123-4567</span>
-            </div>
-            <div className="contact-item">
-              <MailOutlined />
-              <span>contact@maxxinke.com</span>
-            </div>
-            <div className="contact-item">
-              <EnvironmentOutlined />
-              <span>上海市浦东新区张江高科技园区</span>
-            </div>
+            {loading ? (
+              <div className="loading-container">
+                <Spin size="small" />
+              </div>
+            ) : contactInfo ? (
+              <>
+                <div className="contact-item">
+                  <PhoneOutlined />
+                  <span>{contactInfo.tel}</span>
+                </div>
+                <div className="contact-item">
+                  <MailOutlined />
+                  <span>{contactInfo.email}</span>
+                </div>
+                <div className="contact-item">
+                  <EnvironmentOutlined />
+                  <span>{contactInfo.address}</span>
+                </div>
+              </>
+            ) : (
+              <div>暂无联系方式信息</div>
+            )}
           </Col>
           <Col xs={24} sm={12} md={8}>
             <h3 className="footer-title">订阅我们</h3>
@@ -84,7 +152,7 @@ const Footer: React.FC = () => {
           </Col>
         </Row>
         <div className="footer-bottom">
-          <p>© 2024 麦克斯鑫科技 版权所有</p>
+          <p>© {new Date().getFullYear()} 麦克斯鑫科技 版权所有</p>
         </div>
       </div>
     </StyledFooter>

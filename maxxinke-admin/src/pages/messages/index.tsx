@@ -189,7 +189,21 @@ const MessagesPage: React.FC = () => {
       </div>
 
       <Modal
-        title="查看消息详情"
+        title={
+          <div style={{ 
+            borderBottom: '1px solid #f0f0f0',
+            padding: '16px 24px',
+            margin: '-20px -24px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}>
+            <span style={{ fontSize: '16px', fontWeight: 500 }}>消息详情</span>
+            <Tag color={currentMessage?.status === '1' ? 'green' : 'red'}>
+              {currentMessage?.status === '1' ? '已读' : '未读'}
+            </Tag>
+          </div>
+        }
         open={viewModalVisible}
         onCancel={() => setViewModalVisible(false)}
         footer={[
@@ -197,28 +211,52 @@ const MessagesPage: React.FC = () => {
             关闭
           </Button>
         ]}
-        width={600}
+        width={700}
       >
         {currentMessage && (
-          <div>
-            <p><Text strong>姓名：</Text>{currentMessage.name}</p>
-            <p><Text strong>邮箱：</Text>{currentMessage.email}</p>
-            <p><Text strong>电话：</Text>{currentMessage.phone}</p>
-            <p><Text strong>状态：</Text>
-              <Tag color={currentMessage.status === '1' ? 'green' : 'red'}>
-                {currentMessage.status === '1' ? '已读' : '未读'}
-              </Tag>
-            </p>
-            <p><Text strong>创建时间：</Text>{dayjs(currentMessage.createTime).format('YYYY-MM-DD HH:mm:ss')}</p>
-            <p><Text strong>留言内容：</Text></p>
-            <p style={{ 
-              background: '#f5f5f5', 
-              padding: '12px', 
-              borderRadius: '4px',
-              whiteSpace: 'pre-wrap'
+          <div style={{ padding: '0 24px' }}>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '16px',
+              marginBottom: '24px'
             }}>
-              {currentMessage.content}
-            </p>
+              <div>
+                <Text type="secondary">姓名</Text>
+                <div style={{ marginTop: '4px', fontSize: '14px' }}>{currentMessage.name}</div>
+              </div>
+              <div>
+                <Text type="secondary">邮箱</Text>
+                <div style={{ marginTop: '4px', fontSize: '14px' }}>{currentMessage.email}</div>
+              </div>
+              <div>
+                <Text type="secondary">电话</Text>
+                <div style={{ marginTop: '4px', fontSize: '14px' }}>{currentMessage.phone}</div>
+              </div>
+              <div>
+                <Text type="secondary">创建时间</Text>
+                <div style={{ marginTop: '4px', fontSize: '14px' }}>
+                  {dayjs(currentMessage.createTime).format('YYYY-MM-DD HH:mm:ss')}
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <Text type="secondary">留言内容</Text>
+              <div style={{ 
+                marginTop: '8px',
+                background: '#fafafa',
+                padding: '16px',
+                borderRadius: '8px',
+                border: '1px solid #f0f0f0',
+                minHeight: '120px',
+                whiteSpace: 'pre-wrap',
+                fontSize: '14px',
+                lineHeight: '1.6'
+              }}>
+                {currentMessage.content}
+              </div>
+            </div>
           </div>
         )}
       </Modal>

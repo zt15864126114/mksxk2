@@ -16,6 +16,7 @@ import Login from './pages/auth/Login'
 import NotFound from './pages/error/NotFound'
 import ServerError from './pages/error/ServerError'
 import AboutUs from './pages/AboutUs'
+import ContactSettings from './pages/settings/contact'
 
 const routes: RouteObject[] = [
   {
@@ -57,6 +58,10 @@ const routes: RouteObject[] = [
       {
         path: 'messages',
         element: <Messages />,
+      },
+      {
+        path: 'settings/contact',
+        element: <ContactSettings />,
       },
     ],
   },

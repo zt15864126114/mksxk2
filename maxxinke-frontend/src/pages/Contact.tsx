@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Typography, Row, Col, Form, Input, Button, message, Card } from 'antd';
+import { Typography, Row, Col, Form, Input, Button, message, Card, Spin, App } from 'antd';
 import { 
   PhoneOutlined, 
   MailOutlined, 
@@ -8,6 +8,7 @@ import {
   GlobalOutlined
 } from '@ant-design/icons';
 import { messageService } from '../services/messageService';
+import { getContactInfo, ContactInfo } from '../services/systemService';
 
 const { Title, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -40,13 +41,69 @@ const ContactCard = styled(Card)`
   }
 `;
 
+const LoadingContainer = styled.div`
+  text-align: center;
+  padding: 20px 0;
+  width: 100%;
+`;
+
 const Contact: React.FC = () => {
   const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
+  const [contactLoading, setContactLoading] = useState(false);
+  const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
+  const { message } = App.useApp();
+
+  // 获取联系方式数据
+  useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        setContactLoading(true);
+        const data = await getContactInfo();
+        
+        // 验证数据是否为空对象或所有字段为空字符串
+        const isEmptyData = !data || Object.values(data).every(val => val === '');
+        
+        if (isEmptyData) {
+          console.error('联系页面：获取的联系方式数据为空');
+          // 设置默认数据，确保页面显示内容
+          setContactInfo({
+            tel: '0755-12345678',
+            mobile: '138 8888 8888',
+            email: 'info@maxxinke.com',
+            serviceEmail: 'service@maxxinke.com',
+            address: '深圳市宝安区新安街道某某工业园A栋5楼',
+            postcode: '518000',
+            website: 'www.maxxinke.com',
+            wechat: '麦克斯鑫科'
+          });
+        } else {
+          setContactInfo(data);
+        }
+      } catch (error) {
+        console.error('联系页面：获取联系方式失败:', error);
+        // 设置默认数据，确保页面显示内容
+        setContactInfo({
+          tel: '0755-12345678',
+          mobile: '138 8888 8888',
+          email: 'info@maxxinke.com',
+          serviceEmail: 'service@maxxinke.com',
+          address: '深圳市宝安区新安街道某某工业园A栋5楼',
+          postcode: '518000',
+          website: 'www.maxxinke.com',
+          wechat: '麦克斯鑫科'
+        });
+      } finally {
+        setContactLoading(false);
+      }
+    };
+    
+    fetchContactInfo();
+  }, []);
 
   const handleSubmit = async (values: any) => {
     try {
-      setLoading(true);
+      setFormLoading(true);
       await messageService.create({
         name: values.name,
         email: values.email,
@@ -59,7 +116,7 @@ const Contact: React.FC = () => {
       message.error('提交失败，请稍后重试');
       console.error('留言提交失败:', error);
     } finally {
-      setLoading(false);
+      setFormLoading(false);
     }
   };
 
@@ -73,37 +130,48 @@ const Contact: React.FC = () => {
         <Row gutter={[24, 24]}>
           <Col xs={24} md={12}>
             <ContactCard title="联系方式">
-              <div className="contact-item">
-                <PhoneOutlined className="icon" />
-                <div>
-                  <div>电话：0755-12345678</div>
-                  <div>手机：138 8888 8888</div>
-                </div>
-              </div>
-              
-              <div className="contact-item">
-                <MailOutlined className="icon" />
-                <div>
-                  <div>邮箱：info@maxxinke.com</div>
-                  <div>客服：service@maxxinke.com</div>
-                </div>
-              </div>
-              
-              <div className="contact-item">
-                <EnvironmentOutlined className="icon" />
-                <div>
-                  <div>地址：深圳市宝安区新安街道某某工业园A栋5楼</div>
-                  <div>邮编：518000</div>
-                </div>
-              </div>
-              
-              <div className="contact-item">
-                <GlobalOutlined className="icon" />
-                <div>
-                  <div>网址：www.maxxinke.com</div>
-                  <div>微信公众号：麦克斯鑫科</div>
-                </div>
-              </div>
+              {contactLoading ? (
+                <LoadingContainer>
+                  <Spin />
+                  <div style={{ marginTop: '10px', color: '#999' }}>加载中...</div>
+                </LoadingContainer>
+              ) : contactInfo ? (
+                <>
+                  <div className="contact-item">
+                    <PhoneOutlined className="icon" />
+                    <div>
+                      <div>电话：{contactInfo.tel}</div>
+                      <div>手机：{contactInfo.mobile}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="contact-item">
+                    <MailOutlined className="icon" />
+                    <div>
+                      <div>邮箱：{contactInfo.email}</div>
+                      <div>客服：{contactInfo.serviceEmail}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="contact-item">
+                    <EnvironmentOutlined className="icon" />
+                    <div>
+                      <div>地址：{contactInfo.address}</div>
+                      <div>邮编：{contactInfo.postcode}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="contact-item">
+                    <GlobalOutlined className="icon" />
+                    <div>
+                      <div>网址：{contactInfo.website}</div>
+                      <div>微信公众号：{contactInfo.wechat}</div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div>暂无联系方式信息</div>
+              )}
             </ContactCard>
           </Col>
 
@@ -160,7 +228,7 @@ const Contact: React.FC = () => {
                   <Button 
                     type="primary" 
                     htmlType="submit"
-                    loading={loading}
+                    loading={formLoading}
                     block
                   >
                     提交留言

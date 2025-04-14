@@ -243,6 +243,48 @@ const itemVariants = {
   }
 };
 
+// 产品卡片样式
+const ProductCard = styled(Card)`
+  height: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border-color: #1890ff;
+  }
+  
+  .ant-card-head {
+    border-bottom: 1px solid #f0f0f0;
+    background-color: #f9f9f9;
+  }
+  
+  .ant-card-head-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1890ff;
+  }
+  
+  .product-feature {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    
+    .anticon {
+      font-size: 16px;
+      color: #1890ff;
+      margin-right: 10px;
+      margin-top: 3px;
+    }
+    
+    .feature-text {
+      flex: 1;
+    }
+  }
+`;
+
 const About: React.FC = () => {
   const [aboutUs, setAboutUs] = useState<AboutUs | null>(null);
   const [loading, setLoading] = useState(true);
@@ -292,8 +334,26 @@ const About: React.FC = () => {
     return areas;
   };
 
+  // 解析产品优势为结构化数据
+  const parseProductAdvantages = (text: string) => {
+    const products: { [key: string]: string[] } = {};
+    let currentProduct = '';
+    
+    text.split('\n').forEach(line => {
+      if (line.match(/^\d+\./)) {
+        currentProduct = line.replace(/^\d+\.\s+/, '');
+        products[currentProduct] = [];
+      } else if (line.startsWith('-') && currentProduct) {
+        products[currentProduct].push(line.replace(/^-\s+/, ''));
+      }
+    });
+    
+    return products;
+  };
+
   const applicationAreas = aboutUs ? parseAreas(aboutUs.applicationAreas) : {};
   const coreAdvantages = aboutUs ? parseAdvantages(aboutUs.coreAdvantages) : [];
+  const productAdvantages = aboutUs ? parseProductAdvantages(aboutUs.productAdvantages) : {};
 
   return (
     <AboutWrapper>
@@ -397,11 +457,25 @@ const About: React.FC = () => {
               <Col xs={24}>
                 <SectionTitle>产品优势</SectionTitle>
               </Col>
-              <Col xs={24}>
-                <SectionDescription>
-                  {aboutUs?.productAdvantages}
-                </SectionDescription>
-              </Col>
+              {Object.entries(productAdvantages).map(([product, features], index) => (
+                <Col xs={24} md={12} key={index}>
+                  <ProductCard 
+                    title={product}
+                    extra={
+                      index === 0 ? 
+                        <img src="/images/water-treatment.png" alt="水处理" style={{ width: 24, height: 24 }} /> : 
+                        <img src="/images/additive.png" alt="外加剂" style={{ width: 24, height: 24 }} />
+                    }
+                  >
+                    {features.map((feature, i) => (
+                      <div className="product-feature" key={i}>
+                        <CheckCircleOutlined className="anticon" />
+                        <span className="feature-text">{feature}</span>
+                      </div>
+                    ))}
+                  </ProductCard>
+                </Col>
+              ))}
             </Row>
           </MotionDiv>
 

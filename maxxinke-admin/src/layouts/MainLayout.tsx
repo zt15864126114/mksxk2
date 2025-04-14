@@ -58,6 +58,7 @@ const MainLayout: React.FC = () => {
     if (path === '/products/categories') return 'product-categories';
     if (path === '/news') return 'news'; 
     if (path === '/messages') return 'messages';
+    if (path === '/settings/contact') return 'settings-contact';
     return '';
   };
 
@@ -70,6 +71,9 @@ const MainLayout: React.FC = () => {
     ]),
     getItem('新闻管理', 'news', <FileTextOutlined />, undefined, () => navigate('/news')),
     getItem('消息管理', 'messages', <MessageOutlined />, undefined, () => navigate('/messages')),
+    getItem('系统设置', 'settings-group', <SettingOutlined />, [
+      getItem('联系方式', 'settings-contact', undefined, undefined, () => navigate('/settings/contact')),
+    ]),
   ];
 
   const handleLogout = () => {
@@ -110,6 +114,7 @@ const MainLayout: React.FC = () => {
   const getOpenKeys = () => {
     const path = location.pathname;
     if (path.startsWith('/products')) return ['products-group'];
+    if (path.startsWith('/settings')) return ['settings-group'];
     return [];
   };
 
