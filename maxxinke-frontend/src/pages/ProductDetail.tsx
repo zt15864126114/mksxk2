@@ -128,7 +128,7 @@ const ProductDetail: React.FC = () => {
         返回产品列表
       </BackButton>
       
-      <Card bordered={false}>
+      <Card variant="outlined">
         <Row gutter={[32, 32]}>
           <Col xs={24} md={12}>
             <ProductImage 

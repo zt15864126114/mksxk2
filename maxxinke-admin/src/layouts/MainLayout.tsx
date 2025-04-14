@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Layout, Menu, theme, Typography, Avatar, Dropdown, message } from 'antd';
+import type { MenuProps } from 'antd';
 import {
   DashboardOutlined,
   ShopOutlined,
@@ -11,15 +12,37 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   InfoCircleOutlined,
+  AppstoreOutlined,
+  SettingOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '../store/userStore';
+import ChangePasswordModal from '../components/ChangePasswordModal';
 
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
 
+type MenuItem = Required<MenuProps>['items'][number];
+
+function getItem(
+  label: React.ReactNode,
+  key: string,
+  icon?: React.ReactNode,
+  children?: MenuItem[],
+  onClick?: () => void,
+): MenuItem {
+  return {
+    key,
+    icon,
+    children,
+    label,
+    onClick,
+  } as MenuItem;
+}
+
 const MainLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [changePasswordModalVisible, setChangePasswordModalVisible] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { logout } = useUserStore();
@@ -27,48 +50,26 @@ const MainLayout: React.FC = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  // 确定当前选中的菜单项
   const getSelectedKey = () => {
     const path = location.pathname;
     if (path === '/' || path === '/dashboard') return 'dashboard';
     if (path === '/about-us') return 'about-us';
     if (path === '/products') return 'products';
+    if (path === '/products/categories') return 'product-categories';
     if (path === '/news') return 'news'; 
     if (path === '/messages') return 'messages';
     return '';
   };
 
-  const menuItems = [
-    {
-      key: 'dashboard',
-      icon: <DashboardOutlined />,
-      label: '仪表盘',
-      onClick: () => navigate('/dashboard'),
-    },
-    {
-      key: 'about-us',
-      icon: <InfoCircleOutlined />,
-      label: '关于我们',
-      onClick: () => navigate('/about-us'),
-    },
-    {
-      key: 'products',
-      icon: <ShopOutlined />,
-      label: '产品管理',
-      onClick: () => navigate('/products'),
-    },
-    {
-      key: 'news',
-      icon: <FileTextOutlined />,
-      label: '新闻管理',
-      onClick: () => navigate('/news'),
-    },
-    {
-      key: 'messages',
-      icon: <MessageOutlined />,
-      label: '消息管理',
-      onClick: () => navigate('/messages'),
-    },
+  const menuItems: MenuItem[] = [
+    getItem('仪表盘', 'dashboard', <DashboardOutlined />, undefined, () => navigate('/dashboard')),
+    getItem('关于我们', 'about-us', <InfoCircleOutlined />, undefined, () => navigate('/about-us')),
+    getItem('产品管理', 'products-group', <ShopOutlined />, [
+      getItem('产品列表', 'products', undefined, undefined, () => navigate('/products')),
+      getItem('产品分类', 'product-categories', undefined, undefined, () => navigate('/products/categories')),
+    ]),
+    getItem('新闻管理', 'news', <FileTextOutlined />, undefined, () => navigate('/news')),
+    getItem('消息管理', 'messages', <MessageOutlined />, undefined, () => navigate('/messages')),
   ];
 
   const handleLogout = () => {
@@ -81,6 +82,10 @@ const MainLayout: React.FC = () => {
     }
   };
 
+  const handleOpenChangePasswordModal = () => {
+    setChangePasswordModalVisible(true);
+  };
+
   const userMenuItems = [
     {
       key: '1',
@@ -89,12 +94,24 @@ const MainLayout: React.FC = () => {
       disabled: true,
     },
     {
+      key: 'change-password',
+      icon: <SettingOutlined />,
+      label: '修改密码',
+      onClick: handleOpenChangePasswordModal,
+    },
+    {
       key: '2', 
       icon: <LogoutOutlined />,
       label: '退出登录',
       onClick: handleLogout,
     },
   ];
+
+  const getOpenKeys = () => {
+    const path = location.pathname;
+    if (path.startsWith('/products')) return ['products-group'];
+    return [];
+  };
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -108,6 +125,7 @@ const MainLayout: React.FC = () => {
           theme="dark"
           mode="inline"
           selectedKeys={[getSelectedKey()]}
+          defaultOpenKeys={getOpenKeys()}
           items={menuItems}
         />
       </Sider>
@@ -136,12 +154,16 @@ const MainLayout: React.FC = () => {
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
             minHeight: 280,
-            overflow: 'auto', // 添加滚动条，防止内容溢出
+            overflow: 'auto',
           }}
         >
           <Outlet />
         </Content>
       </Layout>
+      <ChangePasswordModal
+        open={changePasswordModalVisible}
+        onClose={() => setChangePasswordModalVisible(false)}
+      />
     </Layout>
   );
 };

@@ -84,9 +84,6 @@ const Login = () => {
             </Button>
           </Form.Item>
         </Form>
-        <div style={{textAlign: 'center'}}>
-          <p>用户名: admin / 密码: 654321</p>
-        </div>
       </Card>
     </div>
   );

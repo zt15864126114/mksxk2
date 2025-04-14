@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Space, Modal, message, Pagination } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, AppstoreOutlined } from '@ant-design/icons';
 import { productService, Product } from '@/services/productService';
 import ProductForm from './components/ProductForm';
 import dayjs from 'dayjs';
 import { SortOrder } from 'antd/es/table/interface';
+import { useNavigate } from 'react-router-dom';
 
 const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -14,11 +15,12 @@ const ProductsPage: React.FC = () => {
   const [pageSize, setPageSize] = useState(10);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
+  const navigate = useNavigate();
 
   const fetchProducts = async (page = currentPage, size = pageSize) => {
     try {
       setLoading(true);
-      const response = await productService.getProducts({ page, size });
+      const response = await productService.getProducts({ page, pageSize: size });
       setProducts(response.content);
       setTotal(response.totalElements);
     } catch (error) {
@@ -80,7 +82,7 @@ const ProductsPage: React.FC = () => {
           <p><strong>产品名称：</strong>{record.name}</p>
           <p><strong>类别：</strong>{record.category}</p>
           <p><strong>描述：</strong>{record.description}</p>
-          <p><strong>规格：</strong>{record.specification}</p>
+          <p><strong>规格：</strong>{record.specifications}</p>
           <p><strong>应用领域：</strong>{record.application}</p>
           <p><strong>图片：</strong></p>
           <img src={record.image} alt="产品图片" style={{ maxWidth: '100%', maxHeight: '300px' }} />
@@ -121,9 +123,22 @@ const ProductsPage: React.FC = () => {
     },
     {
       title: '规格',
-      dataIndex: 'specification',
-      key: 'specification',
+      dataIndex: 'specifications',
+      key: 'specifications',
       width: 120,
+      render: (specifications: string | any) => {
+        if (typeof specifications === 'string') {
+          try {
+            const specsArray = JSON.parse(specifications);
+            if (Array.isArray(specsArray) && specsArray.length > 0) {
+              return specsArray[0].name || '[规格]';
+            }
+          } catch (e) {
+            return specifications.length > 20 ? specifications.substring(0, 17) + '...' : specifications;
+          }
+        }
+        return '[规格]';
+      },
     },
     {
       title: '应用领域',
@@ -204,10 +219,15 @@ const ProductsPage: React.FC = () => {
 
   return (
     <div style={{ height: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ marginBottom: 16 }}>
-        <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-          新增产品
-        </Button>
+      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
+        <Space>
+          <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+            新增产品
+          </Button>
+          <Button icon={<AppstoreOutlined />} onClick={() => navigate('/products/categories')}>
+            分类管理
+          </Button>
+        </Space>
       </div>
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>

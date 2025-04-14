@@ -8,6 +8,7 @@ import AuthGuard from './components/AuthGuard'
 
 // 直接引入所有页面组件
 import Products from './pages/products'
+import ProductCategories from './pages/products/categories'
 import News from './pages/news'
 import Messages from './pages/messages'
 import Dashboard from './pages/dashboard'
@@ -44,6 +45,10 @@ const routes: RouteObject[] = [
       {
         path: 'products',
         element: <Products />,
+      },
+      {
+        path: 'products/categories',
+        element: <ProductCategories />,
       },
       {
         path: 'news',

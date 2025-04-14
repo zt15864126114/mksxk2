@@ -105,6 +105,35 @@ export const authAPI = {
     }),
 };
 
+// 管理员相关API
+export const adminAPI = {
+  getCurrentAdmin: () => 
+    request<any>({
+      url: '/admins/me',
+      method: 'GET',
+    }),
+    
+  validatePassword: (adminId: number, password: string) =>
+    request<void>({
+      url: `/admins/${adminId}/validate-password`,
+      method: 'POST',
+      data: password,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    }),
+    
+  updatePassword: (adminId: number, newPassword: string) => 
+    request<void>({
+      url: `/admins/${adminId}/password`,
+      method: 'PUT',
+      data: newPassword,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    }),
+};
+
 // 产品相关API
 export const productsAPI = {
   getProducts: (params: ProductListParams) => 

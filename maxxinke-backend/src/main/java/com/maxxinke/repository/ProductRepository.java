@@ -15,6 +15,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findByStatusOrderBySortDesc(Integer status, Pageable pageable);
     List<Product> findByStatusOrderBySortDesc(Integer status);
     List<Product> findByStatusAndCategoryOrderBySortDescCreateTimeDesc(Integer status, String category);
+    
+    /**
+     * 根据状态查找产品，按创建时间降序排序
+     * @param status 产品状态
+     * @param pageable 分页参数
+     * @return 产品分页列表
+     */
+    Page<Product> findByStatusOrderByCreateTimeDesc(Integer status, Pageable pageable);
 
     /**
      * 根据分类查找产品

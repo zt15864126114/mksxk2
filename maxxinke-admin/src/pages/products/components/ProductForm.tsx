@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Input, Select, InputNumber, Upload, Button, message, Space } from 'antd';
 import { UploadOutlined, PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
-import type { Product, ProductSpecification } from '@/services/productService';
+import type { Product, ProductSpecification, ProductCategory } from '@/services/productService';
+import { productService } from '@/services/productService';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api';
 
@@ -18,6 +19,26 @@ const ProductForm: React.FC<ProductFormProps> = ({
 }) => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
+  const [categories, setCategories] = useState<ProductCategory[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(false);
+
+  // 获取产品类别
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoadingCategories(true);
+        const response = await productService.getCategories();
+        setCategories(response);
+      } catch (error) {
+        console.error('获取产品类别失败:', error);
+        message.error('获取产品类别失败');
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   // 处理图片预览URL
   const getImageUrl = (image: string) => {
@@ -92,10 +113,15 @@ const ProductForm: React.FC<ProductFormProps> = ({
         label="产品类别"
         rules={[{ required: true, message: '请选择产品类别' }]}
       >
-        <Select placeholder="请选择产品类别">
-          <Select.Option value="CATEGORY_1">类别1</Select.Option>
-          <Select.Option value="CATEGORY_2">类别2</Select.Option>
-          <Select.Option value="CATEGORY_3">类别3</Select.Option>
+        <Select 
+          placeholder="请选择产品类别"
+          loading={loadingCategories}
+        >
+          {categories.map(category => (
+            <Select.Option key={category.id} value={category.name}>
+              {category.name}
+            </Select.Option>
+          ))}
         </Select>
       </Form.Item>
 

@@ -36,6 +36,14 @@ export interface ProductListResponse {
   number: number;
 }
 
+export interface ProductCategory {
+  id: number;
+  name: string;
+  sort: number;
+  status: number;
+  createTime?: string;
+}
+
 export const productService = {
   // 获取产品列表
   getProducts: async (params?: ProductListParams) => {
@@ -98,5 +106,34 @@ export const productService = {
   getAllProducts: async () => {
     const response = await request.get<Product[]>('/products/all');
     return response;
+  },
+
+  // 获取产品分类列表
+  getCategories: async () => {
+    const response = await request.get<ProductCategory[]>('/product/categories');
+    return response;
+  },
+
+  // 获取分类详情
+  getCategory: async (id: string) => {
+    const response = await request.get<ProductCategory>(`/product/categories/${id}`);
+    return response;
+  },
+
+  // 创建分类
+  createCategory: async (category: Partial<ProductCategory>) => {
+    const response = await request.post<ProductCategory>('/product/categories', category);
+    return response;
+  },
+
+  // 更新分类
+  updateCategory: async (id: string, category: Partial<ProductCategory>) => {
+    const response = await request.put<ProductCategory>(`/product/categories/${id}`, category);
+    return response;
+  },
+
+  // 删除分类
+  deleteCategory: async (id: string) => {
+    await request.delete(`/product/categories/${id}`);
   }
 }; 
