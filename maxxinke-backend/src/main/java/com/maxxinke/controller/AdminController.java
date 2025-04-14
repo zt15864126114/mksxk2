@@ -70,6 +70,15 @@ public class AdminController {
     }
     
     /**
+     * 获取当前登录的管理员信息
+     */
+    @ApiOperation(value = "获取当前管理员", notes = "获取当前登录的管理员信息")
+    @GetMapping("/me")
+    public ResponseEntity<Admin> getCurrentAdmin() {
+        return ResponseEntity.ok(adminService.getCurrentAdmin());
+    }
+    
+    /**
      * 根据ID获取管理员信息
      */
     @ApiOperation(value = "获取管理员详情", notes = "根据ID获取管理员详细信息")
@@ -92,5 +101,28 @@ public class AdminController {
             @RequestBody String newPassword) {
         adminService.updatePassword(id, newPassword);
         return ResponseEntity.ok().build();
+    }
+    
+    /**
+     * 验证管理员密码
+     */
+    @ApiOperation(value = "验证密码", notes = "验证指定管理员的密码是否正确")
+    @PostMapping("/{id}/validate-password")
+    public ResponseEntity<Boolean> validatePassword(
+            @ApiParam(value = "管理员ID", required = true)
+            @PathVariable Long id,
+            @ApiParam(value = "密码", required = true)
+            @RequestBody String password) {
+        Admin admin = adminService.getAdminById(id);
+        if (admin == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        boolean isValid = adminService.validatePassword(password, admin.getPassword());
+        if (isValid) {
+            return ResponseEntity.ok(true);
+        } else {
+            return ResponseEntity.status(400).body(false);
+        }
     }
 } 

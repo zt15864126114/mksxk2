@@ -92,7 +92,7 @@ public class NewsController {
      * 需要管理员权限
      */
     @ApiOperation(value = "更新新闻", notes = "更新已有的新闻文章，支持更新图片")
-    @PostMapping(value = "/{id}", consumes = { "multipart/form-data" })
+    @PutMapping(value = "/{id}", consumes = { "multipart/form-data" })
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<News> updateNews(
             @ApiParam(value = "新闻ID", required = true)

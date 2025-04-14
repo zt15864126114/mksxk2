@@ -12,7 +12,7 @@ export interface Product {
   name: string;
   category: string;
   description: string;
-  specifications: string;
+  specifications: ProductSpecification[] | string;
   application: string;
   image: string;
   sort: number;

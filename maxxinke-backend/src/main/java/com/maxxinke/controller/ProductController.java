@@ -93,7 +93,7 @@ public class ProductController {
      * 更新产品
      */
     @ApiOperation(value = "更新产品", notes = "更新产品信息，可选择更新产品图片")
-    @PostMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = { "multipart/form-data" })
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Product> updateProduct(
             @ApiParam(value = "产品ID", required = true)

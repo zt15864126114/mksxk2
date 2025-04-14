@@ -27,14 +27,22 @@ export interface NewsListResponse {
   number: number;
 }
 
-export const getNews = async (params?: NewsListParams) => {
-  const adjustedParams = params ? {
+export interface NewsResponse {
+  content: News[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}
+
+export const getNews = async (params: NewsListParams): Promise<NewsResponse> => {
+  const adjustedParams = {
     ...params,
     page: (params.page || 1) - 1, // 将页码减1以适配Spring Boot的分页
     size: params.pageSize
-  } : undefined;
+  };
   
-  const response = await request.get<NewsListResponse>('/news', { 
+  const response = await request.get<NewsResponse>('/news', { 
     params: adjustedParams
   });
   return response;

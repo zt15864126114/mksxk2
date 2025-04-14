@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Space, Modal, message, Pagination } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, AppstoreOutlined } from '@ant-design/icons';
-import { productService, Product } from '@/services/productService';
+import { productService, Product, ProductSpecification } from '@/services/productService';
 import ProductForm from './components/ProductForm';
 import dayjs from 'dayjs';
 import { SortOrder } from 'antd/es/table/interface';
@@ -74,21 +74,189 @@ const ProductsPage: React.FC = () => {
   };
 
   const handleView = (record: Product) => {
+    // 处理规格数据显示
+    let specs: ProductSpecification[] = [];
+    
+    try {
+      if (typeof record.specifications === 'string') {
+        specs = JSON.parse(record.specifications);
+      } else if (Array.isArray(record.specifications)) {
+        specs = record.specifications;
+      }
+    } catch (e) {
+      console.error('解析规格数据失败:', e);
+    }
+    
     Modal.info({
-      title: '产品详情',
-      width: 600,
+      title: <div style={{ fontSize: '18px', fontWeight: 'bold' }}>{record.name}</div>,
+      width: 720,
+      icon: null,
+      className: 'product-detail-modal',
+      maskClosable: true,
+      okText: '关闭',
       content: (
-        <div>
-          <p><strong>产品名称：</strong>{record.name}</p>
-          <p><strong>类别：</strong>{record.category}</p>
-          <p><strong>描述：</strong>{record.description}</p>
-          <p><strong>规格：</strong>{record.specifications}</p>
-          <p><strong>应用领域：</strong>{record.application}</p>
-          <p><strong>图片：</strong></p>
-          <img src={record.image} alt="产品图片" style={{ maxWidth: '100%', maxHeight: '300px' }} />
-          <p><strong>排序：</strong>{record.sort}</p>
-          <p><strong>状态：</strong>{record.status === 1 ? '启用' : '禁用'}</p>
-          <p><strong>创建时间：</strong>{dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss')}</p>
+        <div style={{ padding: '16px 0' }}>
+          <div style={{ 
+            display: 'flex', 
+            flexWrap: 'wrap', 
+            gap: '24px',
+            marginBottom: '24px' 
+          }}>
+            {/* 产品图片 */}
+            <div style={{ width: '260px', flexShrink: 0 }}>
+              <div style={{ 
+                border: '1px solid #f0f0f0', 
+                borderRadius: '8px', 
+                overflow: 'hidden',
+                padding: '8px',
+                backgroundColor: '#fafafa',
+                textAlign: 'center'
+              }}>
+                <img 
+                  src={record.image} 
+                  alt={record.name} 
+                  style={{ 
+                    maxWidth: '100%', 
+                    maxHeight: '260px', 
+                    objectFit: 'contain',
+                    borderRadius: '4px'
+                  }} 
+                />
+              </div>
+            </div>
+            
+            {/* 产品基本信息 */}
+            <div style={{ flex: 1 }}>
+              <h3 style={{ fontSize: '16px', marginTop: 0, marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
+                <span style={{ 
+                  display: 'inline-block', 
+                  width: '4px', 
+                  height: '16px', 
+                  backgroundColor: '#1890ff', 
+                  marginRight: '8px',
+                  borderRadius: '2px'
+                }}></span>
+                基本信息
+              </h3>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', rowGap: '12px' }}>
+                <div style={{ color: '#666' }}>产品类别:</div>
+                <div style={{ fontWeight: 500 }}>{record.category}</div>
+                
+                <div style={{ color: '#666' }}>状态:</div>
+                <div>
+                  <span style={{ 
+                    display: 'inline-block',
+                    padding: '2px 8px', 
+                    borderRadius: '10px', 
+                    fontSize: '12px',
+                    backgroundColor: record.status === 1 ? '#e6f7ff' : '#fff1f0',
+                    color: record.status === 1 ? '#1890ff' : '#ff4d4f',
+                    border: `1px solid ${record.status === 1 ? '#91caff' : '#ffccc7'}`
+                  }}>
+                    {record.status === 1 ? '启用' : '禁用'}
+                  </span>
+                </div>
+                
+                <div style={{ color: '#666' }}>排序:</div>
+                <div>{record.sort}</div>
+                
+                <div style={{ color: '#666' }}>创建时间:</div>
+                <div>{dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss')}</div>
+              </div>
+            </div>
+          </div>
+          
+          {/* 产品描述 */}
+          <div style={{ marginBottom: '24px' }}>
+            <h3 style={{ fontSize: '16px', margin: '0 0 16px', display: 'flex', alignItems: 'center' }}>
+              <span style={{ 
+                display: 'inline-block', 
+                width: '4px', 
+                height: '16px', 
+                backgroundColor: '#1890ff', 
+                marginRight: '8px',
+                borderRadius: '2px'
+              }}></span>
+              产品描述
+            </h3>
+            <div style={{ 
+              padding: '12px 16px', 
+              backgroundColor: '#fafafa', 
+              borderRadius: '4px',
+              lineHeight: '1.6',
+              whiteSpace: 'pre-wrap'
+            }}>
+              {record.description || '暂无描述'}
+            </div>
+          </div>
+          
+          {/* 应用领域 */}
+          <div style={{ marginBottom: '24px' }}>
+            <h3 style={{ fontSize: '16px', margin: '0 0 16px', display: 'flex', alignItems: 'center' }}>
+              <span style={{ 
+                display: 'inline-block', 
+                width: '4px', 
+                height: '16px', 
+                backgroundColor: '#1890ff', 
+                marginRight: '8px',
+                borderRadius: '2px'
+              }}></span>
+              应用领域
+            </h3>
+            <div style={{ 
+              padding: '12px 16px', 
+              backgroundColor: '#fafafa', 
+              borderRadius: '4px',
+              lineHeight: '1.6',
+              whiteSpace: 'pre-wrap'
+            }}>
+              {record.application || '暂无应用领域'}
+            </div>
+          </div>
+          
+          {/* 产品规格 */}
+          <div>
+            <h3 style={{ fontSize: '16px', margin: '0 0 16px', display: 'flex', alignItems: 'center' }}>
+              <span style={{ 
+                display: 'inline-block', 
+                width: '4px', 
+                height: '16px', 
+                backgroundColor: '#1890ff', 
+                marginRight: '8px',
+                borderRadius: '2px'
+              }}></span>
+              产品规格 ({specs.length})
+            </h3>
+            {specs.length > 0 ? (
+              <div style={{ 
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                gap: '12px',
+              }}>
+                {specs.map((spec, index) => (
+                  <div 
+                    key={index}
+                    style={{ 
+                      padding: '12px 16px', 
+                      backgroundColor: '#fafafa', 
+                      borderRadius: '4px',
+                      border: '1px solid #f0f0f0'
+                    }}
+                  >
+                    <div style={{ fontWeight: 500 }}>{spec.name}</div>
+                    <div style={{ marginTop: '4px', color: '#666' }}>
+                      {spec.value} {spec.unit || ''}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ color: '#999', padding: '12px 16px', backgroundColor: '#fafafa', borderRadius: '4px' }}>
+                暂无规格信息
+              </div>
+            )}
+          </div>
         </div>
       ),
     });
@@ -126,18 +294,34 @@ const ProductsPage: React.FC = () => {
       dataIndex: 'specifications',
       key: 'specifications',
       width: 120,
-      render: (specifications: string | any) => {
-        if (typeof specifications === 'string') {
-          try {
-            const specsArray = JSON.parse(specifications);
-            if (Array.isArray(specsArray) && specsArray.length > 0) {
-              return specsArray[0].name || '[规格]';
-            }
-          } catch (e) {
-            return specifications.length > 20 ? specifications.substring(0, 17) + '...' : specifications;
+      render: (specifications: string | ProductSpecification[]) => {
+        try {
+          // 解析规格数据
+          let specs: ProductSpecification[] = [];
+          
+          if (typeof specifications === 'string') {
+            specs = JSON.parse(specifications);
+          } else if (Array.isArray(specifications)) {
+            specs = specifications;
           }
+          
+          // 显示第一条规格或规格总数
+          if (specs.length > 0) {
+            const firstSpec = specs[0];
+            if (specs.length === 1) {
+              return `${firstSpec.name}: ${firstSpec.value}${firstSpec.unit ? ` ${firstSpec.unit}` : ''}`;
+            } else {
+              return `${firstSpec.name}: ${firstSpec.value}${firstSpec.unit ? ` ${firstSpec.unit}` : ''} 等${specs.length}项`;
+            }
+          } else {
+            return '无规格';
+          }
+        } catch (e) {
+          console.error('解析规格数据失败:', e);
+          // 如果解析失败，显示原始字符串的截断版本
+          const str = String(specifications);
+          return str.length > 20 ? str.substring(0, 17) + '...' : str;
         }
-        return '[规格]';
       },
     },
     {

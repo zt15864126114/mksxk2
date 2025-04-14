@@ -19,7 +19,7 @@ const NewsPage: React.FC = () => {
   const fetchNews = async (page = currentPage, size = pageSize) => {
     try {
       setLoading(true);
-      const response = await getNews({ page, size });
+      const response = await getNews({ page, pageSize: size });
       if (response && response.content) {
         setNews(response.content);
         setTotal(response.totalElements);
@@ -76,17 +76,105 @@ const NewsPage: React.FC = () => {
 
   const handleView = (record: News) => {
     Modal.info({
-      title: '新闻详情',
-      width: 600,
+      title: <div style={{ fontSize: '18px', fontWeight: 'bold' }}>{record.title}</div>,
+      width: 720,
+      icon: null,
+      className: 'news-detail-modal',
+      maskClosable: true,
+      okText: '关闭',
       content: (
-        <div>
-          <p><strong>标题：</strong>{record.title}</p>
-          <p><strong>类型：</strong>{record.type}</p>
-          <p><strong>内容：</strong>{record.content}</p>
-          <p><strong>图片：</strong></p>
-          <img src={record.image} alt="新闻图片" style={{ maxWidth: '100%', maxHeight: '300px' }} />
-          <p><strong>状态：</strong>{record.status === 1 ? '启用' : '禁用'}</p>
-          <p><strong>创建时间：</strong>{dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss')}</p>
+        <div style={{ padding: '16px 0' }}>
+          <div style={{ 
+            display: 'flex', 
+            flexWrap: 'wrap', 
+            gap: '24px',
+            marginBottom: '24px' 
+          }}>
+            {/* 新闻图片 */}
+            <div style={{ width: '260px', flexShrink: 0 }}>
+              <div style={{ 
+                border: '1px solid #f0f0f0', 
+                borderRadius: '8px', 
+                overflow: 'hidden',
+                padding: '8px',
+                backgroundColor: '#fafafa',
+                textAlign: 'center'
+              }}>
+                <img 
+                  src={record.image} 
+                  alt={record.title} 
+                  style={{ 
+                    maxWidth: '100%', 
+                    maxHeight: '260px', 
+                    objectFit: 'contain',
+                    borderRadius: '4px'
+                  }} 
+                />
+              </div>
+            </div>
+            
+            {/* 新闻基本信息 */}
+            <div style={{ flex: 1 }}>
+              <h3 style={{ fontSize: '16px', marginTop: 0, marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
+                <span style={{ 
+                  display: 'inline-block', 
+                  width: '4px', 
+                  height: '16px', 
+                  backgroundColor: '#1890ff', 
+                  marginRight: '8px',
+                  borderRadius: '2px'
+                }}></span>
+                基本信息
+              </h3>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', rowGap: '12px' }}>
+                <div style={{ color: '#666' }}>新闻类型:</div>
+                <div style={{ fontWeight: 500 }}>{record.type}</div>
+                
+                <div style={{ color: '#666' }}>状态:</div>
+                <div>
+                  <span style={{ 
+                    display: 'inline-block',
+                    padding: '2px 8px', 
+                    borderRadius: '10px', 
+                    fontSize: '12px',
+                    backgroundColor: record.status === 1 ? '#e6f7ff' : '#fff1f0',
+                    color: record.status === 1 ? '#1890ff' : '#ff4d4f',
+                    border: `1px solid ${record.status === 1 ? '#91caff' : '#ffccc7'}`
+                  }}>
+                    {record.status === 1 ? '启用' : '禁用'}
+                  </span>
+                </div>
+                
+                <div style={{ color: '#666' }}>创建时间:</div>
+                <div>{dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss')}</div>
+              </div>
+            </div>
+          </div>
+          
+          {/* 新闻内容 */}
+          <div style={{ marginBottom: '24px' }}>
+            <h3 style={{ fontSize: '16px', margin: '0 0 16px', display: 'flex', alignItems: 'center' }}>
+              <span style={{ 
+                display: 'inline-block', 
+                width: '4px', 
+                height: '16px', 
+                backgroundColor: '#1890ff', 
+                marginRight: '8px',
+                borderRadius: '2px'
+              }}></span>
+              新闻内容
+            </h3>
+            <div style={{ 
+              padding: '12px 16px', 
+              backgroundColor: '#fafafa', 
+              borderRadius: '4px',
+              lineHeight: '1.6',
+              whiteSpace: 'pre-wrap'
+            }}>
+              {record.content || '暂无内容'}
+            </div>
+          </div>
         </div>
       ),
     });
@@ -133,7 +221,19 @@ const NewsPage: React.FC = () => {
       dataIndex: 'status',
       key: 'status',
       width: 80,
-      render: (status: number) => (status === 1 ? '启用' : '禁用'),
+      render: (status: number) => (
+        <span style={{ 
+          display: 'inline-block',
+          padding: '2px 8px', 
+          borderRadius: '10px', 
+          fontSize: '12px',
+          backgroundColor: status === 1 ? '#e6f7ff' : '#fff1f0',
+          color: status === 1 ? '#1890ff' : '#ff4d4f',
+          border: `1px solid ${status === 1 ? '#91caff' : '#ffccc7'}`
+        }}>
+          {status === 1 ? '启用' : '禁用'}
+        </span>
+      ),
     },
     {
       title: '创建时间',
@@ -183,7 +283,7 @@ const NewsPage: React.FC = () => {
 
   return (
     <div style={{ height: 'calc(100vh - 100px)', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ marginBottom: 16 }}>
+      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
           新增新闻
         </Button>

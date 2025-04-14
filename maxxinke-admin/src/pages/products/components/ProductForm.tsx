@@ -51,7 +51,26 @@ const ProductForm: React.FC<ProductFormProps> = ({
   // 当初始值改变时更新表单和文件列表
   React.useEffect(() => {
     if (initialValues) {
-      form.setFieldsValue(initialValues);
+      // 处理规格数据
+      const formData = { ...initialValues };
+      
+      // 如果规格是字符串，尝试解析为对象数组
+      if (typeof formData.specifications === 'string') {
+        try {
+          formData.specifications = JSON.parse(formData.specifications);
+        } catch (e) {
+          console.error('解析规格数据失败:', e);
+          formData.specifications = [{ name: '', value: '', unit: '' }]; // 设置默认空规格，包含必需属性
+        }
+      }
+      
+      // 如果规格仍然不是数组，设置为默认空数组
+      if (!Array.isArray(formData.specifications)) {
+        formData.specifications = [{ name: '', value: '', unit: '' }];
+      }
+      
+      form.setFieldsValue(formData);
+      
       if (initialValues.image) {
         setFileList([
           {
@@ -74,6 +93,14 @@ const ProductForm: React.FC<ProductFormProps> = ({
       
       // 创建产品数据对象，排除 image 字段
       const { image, ...productData } = values;
+      
+      // 确保规格是有效的数组
+      if (productData.specifications && Array.isArray(productData.specifications)) {
+        // 过滤掉空规格
+        productData.specifications = productData.specifications.filter(
+          spec => spec.name || spec.value || spec.unit
+        );
+      }
       
       // 将产品数据作为JSON字符串添加到FormData
       formData.append('product', JSON.stringify(productData));
