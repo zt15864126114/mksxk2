@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Space, Modal, message, Pagination } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, AppstoreOutlined } from '@ant-design/icons';
+import { Table, Button, Space, Modal, message, Pagination, Input, Card, Tag, Tooltip, Popconfirm } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, AppstoreOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { productService, Product, ProductSpecification } from '@/services/productService';
 import ProductForm from './components/ProductForm';
 import dayjs from 'dayjs';
@@ -388,14 +388,22 @@ const ProductsPage: React.FC = () => {
           >
             编辑
           </Button>
-          <Button
-            type="link"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record.id)}
+          <Popconfirm
+            title="确认删除"
+            description="确定要删除这个产品吗？此操作不可恢复。"
+            onConfirm={() => handleDelete(record.id)}
+            okText="确定"
+            cancelText="取消"
+            icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
           >
-            删除
-          </Button>
+            <Button
+              type="link"
+              danger
+              icon={<DeleteOutlined />}
+            >
+              删除
+            </Button>
+          </Popconfirm>
         </Space>
       ),
     },
@@ -410,19 +418,19 @@ const ProductsPage: React.FC = () => {
           </Button>
           <Button icon={<AppstoreOutlined />} onClick={() => navigate('/products/categories')}>
             分类管理
-          </Button>
+        </Button>
         </Space>
       </div>
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <Table
-          columns={columns}
+      <Table
+        columns={columns}
           dataSource={products}
           rowKey="id"
           loading={loading}
           scroll={{ x: 1500, y: 'calc(100vh - 280px)' }}
-          pagination={false}
-        />
+        pagination={false}
+      />
         <div style={{ 
           padding: '16px 0', 
           borderTop: '1px solid #f0f0f0',

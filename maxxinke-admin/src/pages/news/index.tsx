@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Space, Modal, message, Pagination } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import { Table, Button, Space, Modal, message, Pagination, Popconfirm } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import NewsForm from './components/NewsForm';
 import { getNews, createNews, updateNews, deleteNews } from '@/services/newsService';
 import type { News } from '@/services/newsService';
@@ -268,14 +268,22 @@ const NewsPage: React.FC = () => {
           >
             编辑
           </Button>
-          <Button
-            type="link"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record.id)}
+          <Popconfirm
+            title="确认删除"
+            description="确定要删除这篇新闻吗？此操作不可恢复。"
+            onConfirm={() => handleDelete(record.id)}
+            okText="确定"
+            cancelText="取消"
+            icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
           >
-            删除
-          </Button>
+            <Button
+              type="link"
+              danger
+              icon={<DeleteOutlined />}
+            >
+              删除
+            </Button>
+          </Popconfirm>
         </Space>
       ),
     },

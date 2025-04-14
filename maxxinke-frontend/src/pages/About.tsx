@@ -373,18 +373,18 @@ const About: React.FC = () => {
                 <SectionDescription>
                   {aboutUs?.companyIntro}
                 </SectionDescription>
-                <Button type="primary" icon={<RightOutlined />}>
-                  了解更多
-                </Button>
+                {/*<Button type="primary" icon={<RightOutlined />}>*/}
+                {/*  了解更多*/}
+                {/*</Button>*/}
               </Col>
               <Col xs={24} md={12}>
                 <Row gutter={[16, 16]}>
                   <Col xs={12}>
                     <StatsCard>
                       <Statistic 
-                        title="成立年限" 
-                        value={13} 
-                        suffix="年" 
+                        title="经验丰富"
+                        value={10}
+                        suffix="年+"
                         prefix={<ClockCircleOutlined />} 
                       />
                     </StatsCard>
@@ -462,9 +462,20 @@ const About: React.FC = () => {
                   <ProductCard 
                     title={product}
                     extra={
-                      index === 0 ? 
-                        <img src="/images/water-treatment.png" alt="水处理" style={{ width: 24, height: 24 }} /> : 
-                        <img src="/images/additive.png" alt="外加剂" style={{ width: 24, height: 24 }} />
+                      index === 0 ? (
+                        <span style={{ fontSize: 24, color: '#1890ff' }}>
+                          <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8zm0 18c-3.35 0-6-2.57-6-6.2 0-2.34 1.95-5.44 6-9.14 4.05 3.7 6 6.79 6 9.14 0 3.63-2.65 6.2-6 6.2zm-4.17-6c.37 0 .67.26.74.62.41 2.22 2.28 2.98 3.64 2.87.43-.02.79.32.79.75 0 .4-.32.73-.72.75-2.13.13-4.62-1.09-5.19-4.12-.08-.45.28-.87.74-.87z" />
+                          </svg>
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: 24, color: '#52c41a' }}>
+                          <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-7-2h2v-5h-4v1h2v4zm-1-7c.55 0 1-.45 1-1V7c0-.55-.45-1-1-1s-1 .45-1 1v2c0 .55.45 1 1 1z" />
+                            <path d="M15 11.5c0 1.38-1.12 2.5-2.5 2.5-.57 0-1.1-.19-1.5-.51V15h4v2h-6v-6h2v.92c.4-.32.93-.51 1.5-.51 1.38 0 2.5 1.12 2.5 2.5z" />
+                          </svg>
+                        </span>
+                      )
                     }
                   >
                     {features.map((feature, i) => (

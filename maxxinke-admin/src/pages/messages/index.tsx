@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Space, Typography, Tag, message, Pagination, Modal } from 'antd';
-import { EditOutlined, DeleteOutlined, CheckOutlined, EyeOutlined } from '@ant-design/icons';
+import { Table, Button, Space, Typography, Tag, message, Pagination, Modal, Popconfirm } from 'antd';
+import { EditOutlined, DeleteOutlined, CheckOutlined, EyeOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { messageService } from '../../services/messageService';
 import type { Message } from '../../types/message';
 import type { SortOrder } from 'antd/es/table/interface';
@@ -150,15 +150,23 @@ const MessagesPage: React.FC = () => {
               标记已读
             </Button>
           )}
-          <Button
-            type="primary"
-            danger
-            icon={<DeleteOutlined />}
-            size="small"
-            onClick={() => record.id && handleDelete(record.id)}
+          <Popconfirm
+            title="确认删除"
+            description="确定要删除这条消息吗？此操作不可恢复。"
+            onConfirm={() => record.id && handleDelete(record.id)}
+            okText="确定"
+            cancelText="取消"
+            icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
           >
-            删除
-          </Button>
+            <Button
+              type="primary"
+              danger
+              icon={<DeleteOutlined />}
+              size="small"
+            >
+              删除
+            </Button>
+          </Popconfirm>
         </Space>
       ),
     },
