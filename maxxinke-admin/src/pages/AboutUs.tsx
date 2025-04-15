@@ -7,7 +7,7 @@ const { TextArea } = Input;
 
 const AboutUs: React.FC = () => {
   const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchAboutUs();
@@ -37,61 +37,76 @@ const AboutUs: React.FC = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div style={{ 
+        height: 'calc(100vh - 100px)', 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center' 
+      }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
-    <Card>
-      <Title level={2}>关于我们管理</Title>
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-        style={{ maxWidth: 800, margin: '0 auto' }}
-      >
-        <Form.Item
-          label="公司简介"
-          name="companyIntro"
-          rules={[{ required: true, message: '请输入公司简介' }]}
+    <div style={{ padding: '24px', overflowY: 'auto', height: 'calc(100vh - 64px)' }}>
+      <Card bordered={false}>
+        <Title level={2}>关于我们管理</Title>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          style={{ maxWidth: 800, margin: '0 auto' }}
         >
-          <TextArea rows={6} placeholder="请输入公司简介" />
-        </Form.Item>
+          <Form.Item
+            label="公司简介"
+            name="companyIntro"
+            rules={[{ required: true, message: '请输入公司简介' }]}
+          >
+            <TextArea rows={6} placeholder="请输入公司简介" />
+          </Form.Item>
 
-        <Form.Item
-          label="核心优势"
-          name="coreAdvantages"
-          rules={[{ required: true, message: '请输入核心优势' }]}
-          extra="请按照以下格式输入：优势1：描述1\n优势2：描述2\n优势3：描述3"
-        >
-          <TextArea rows={6} placeholder="请输入核心优势，每行一个优势" />
-        </Form.Item>
+          <Form.Item
+            label="核心优势"
+            name="coreAdvantages"
+            rules={[{ required: true, message: '请输入核心优势' }]}
+            extra="请按照以下格式输入：优势1：描述1\n优势2：描述2\n优势3：描述3"
+          >
+            <TextArea rows={6} placeholder="请输入核心优势，每行一个优势" />
+          </Form.Item>
 
-        <Form.Item
-          label="产品优势"
-          name="productAdvantages"
-          rules={[{ required: true, message: '请输入产品优势' }]}
-        >
-          <TextArea rows={6} placeholder="请输入产品优势" />
-        </Form.Item>
+          <Form.Item
+            label="产品优势"
+            name="productAdvantages"
+            rules={[{ required: true, message: '请输入产品优势' }]}
+          >
+            <TextArea rows={6} placeholder="请输入产品优势" />
+          </Form.Item>
 
-        <Form.Item
-          label="应用领域"
-          name="applicationAreas"
-          rules={[{ required: true, message: '请输入应用领域' }]}
-          extra="请按照以下格式输入：\n1. 领域名称\n- 具体应用1\n- 具体应用2\n\n2. 领域名称\n- 具体应用1\n- 具体应用2"
-        >
-          <TextArea rows={10} placeholder="请输入应用领域" />
-        </Form.Item>
+          <Form.Item
+            label="应用领域"
+            name="applicationAreas"
+            rules={[{ required: true, message: '请输入应用领域' }]}
+            extra="请按照以下格式输入：\n1. 领域名称\n- 具体应用1\n- 具体应用2\n\n2. 领域名称\n- 具体应用1\n- 具体应用2"
+          >
+            <TextArea rows={10} placeholder="请输入应用领域" />
+          </Form.Item>
 
-        <Form.Item>
-          <Space>
-            <Button type="primary" htmlType="submit" loading={loading}>
-              保存
-            </Button>
-            <Button onClick={() => form.resetFields()}>
-              重置
-            </Button>
-          </Space>
-        </Form.Item>
-      </Form>
-    </Card>
+          <Form.Item>
+            <Space>
+              <Button type="primary" htmlType="submit" loading={loading}>
+                保存
+              </Button>
+              <Button onClick={() => form.resetFields()}>
+                重置
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Card>
+    </div>
   );
 };
 

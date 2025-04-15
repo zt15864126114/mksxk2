@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ConfigProvider, App as AntApp } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import Layout from './components/layout/Layout';
@@ -12,11 +12,23 @@ import NewsDetail from './pages/NewsDetail';
 import ProductDetail from './pages/ProductDetail';
 import './styles/global.css';
 
+// 添加滚动到顶部的组件
+const ScrollToTop: React.FC = () => {
+  const { pathname } = useLocation();
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  
+  return null;
+};
+
 const App: React.FC = () => {
   return (
     <ConfigProvider locale={zhCN}>
       <AntApp>
         <Router>
+          <ScrollToTop />
           <Layout>
             <Routes>
               <Route path="/" element={<Home />} />

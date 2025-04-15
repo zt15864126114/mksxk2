@@ -1,3 +1,4 @@
+import api from './api';
 import { request } from '../utils/request';
 
 /**
@@ -20,9 +21,9 @@ export interface ContactInfo {
  */
 export const checkApiConnection = async (): Promise<void> => {
   try {
-    const url = '/api/system/config/contact';
+    const url = '/system/config/contact';
     console.log(`尝试连接API: ${url}`);
-    const response = await request.get(url);
+    const response = await api.get(url);
     console.log('API连接成功，响应:', response);
     
     // 验证响应是否符合预期
@@ -45,12 +46,12 @@ export const getContactInfo = async (): Promise<ContactInfo> => {
     
     // 构造更详细的请求信息，帮助调试
     console.log('请求详情:', {
-      endpoint: '/api/system/config/contact',
+      endpoint: '/system/config/contact',
       method: 'GET',
       headers: { 'Content-Type': 'application/json' }
     });
     
-    const response = await request.get<any>('/api/system/config/contact');
+    const response = await api.get<any>('/system/config/contact');
     
     console.log('获取联系方式数据成功，原始响应:', response);
     
@@ -105,11 +106,11 @@ export const getContactInfo = async (): Promise<ContactInfo> => {
 export const updateContactInfo = async (contactInfo: ContactInfo): Promise<any> => {
   try {
     console.log('更新联系方式数据:', contactInfo);
-    const response = await request.put<any>('/api/system/config/contact', contactInfo);
+    const response = await api.put<any>('/system/config/contact', contactInfo);
     console.log('更新联系方式成功:', response);
     return response;
   } catch (error) {
     console.error('更新联系方式失败:', error);
     throw error;
   }
-}; 
+};

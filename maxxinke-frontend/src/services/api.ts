@@ -12,7 +12,7 @@ declare module 'axios' {
 
 // 创建自定义的axios实例，直接返回response.data
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3002/api',
+  baseURL: process.env.REACT_APP_API_URL || 'http://47.104.65.146:3002/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

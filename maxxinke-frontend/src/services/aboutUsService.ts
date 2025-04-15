@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { config } from '../config';
+import api from './api';
 
 /**
  * 关于我们信息接口
@@ -33,7 +32,7 @@ export const aboutUsService = {
    * @returns Promise<AboutUs> 返回关于我们信息的Promise
    */
   getAboutUs: async (): Promise<AboutUs> => {
-    const response = await axios.get(`${config.apiBaseUrl}/api/about-us`);
-    return response.data;
+    const response = await api.get<AboutUs>('/about-us');
+    return response;
   }
 }; 

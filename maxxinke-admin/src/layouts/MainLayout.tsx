@@ -64,16 +64,17 @@ const MainLayout: React.FC = () => {
 
   const menuItems: MenuItem[] = [
     getItem('仪表盘', 'dashboard', <DashboardOutlined />, undefined, () => navigate('/dashboard')),
-    getItem('关于我们', 'about-us', <InfoCircleOutlined />, undefined, () => navigate('/about-us')),
     getItem('产品管理', 'products-group', <ShopOutlined />, [
       getItem('产品列表', 'products', undefined, undefined, () => navigate('/products')),
       getItem('产品分类', 'product-categories', undefined, undefined, () => navigate('/products/categories')),
     ]),
     getItem('新闻管理', 'news', <FileTextOutlined />, undefined, () => navigate('/news')),
     getItem('消息管理', 'messages', <MessageOutlined />, undefined, () => navigate('/messages')),
-    getItem('系统设置', 'settings-group', <SettingOutlined />, [
-      getItem('联系方式', 'settings-contact', undefined, undefined, () => navigate('/settings/contact')),
-    ]),
+    getItem('关于我们', 'about-us', <InfoCircleOutlined />, undefined, () => navigate('/about-us')),
+    // getItem('系统设置', 'settings-group',  [
+    //   getItem('联系方式', 'settings-contact', undefined, undefined, () => navigate('/settings/contact')),
+    // ]),
+    getItem('联系方式管理', 'settings-contact', <SettingOutlined />,undefined, () => navigate('/settings/contact')),
   ];
 
   const handleLogout = () => {
