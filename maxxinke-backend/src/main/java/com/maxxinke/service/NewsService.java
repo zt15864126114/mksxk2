@@ -108,4 +108,11 @@ public interface NewsService {
      * @return 类型对应的新闻列表
      */
     List<News> getNewsByType(String type);
+
+    /**
+     * 增加新闻浏览量
+     * @param id 新闻ID
+     * @return 更新后的新闻对象
+     */
+    News incrementViews(Long id);
 } 

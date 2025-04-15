@@ -396,13 +396,13 @@ const ProductsPage: React.FC = () => {
             cancelText="取消"
             icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
           >
-            <Button
+          <Button
               type="link"
-              danger
-              icon={<DeleteOutlined />}
-            >
-              删除
-            </Button>
+            danger
+            icon={<DeleteOutlined />}
+          >
+            删除
+          </Button>
           </Popconfirm>
         </Space>
       ),

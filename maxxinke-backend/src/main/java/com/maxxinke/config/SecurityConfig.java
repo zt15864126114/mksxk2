@@ -102,6 +102,7 @@ public class SecurityConfig {
                 .antMatchers("/api/dashboard/**").permitAll()
                 .antMatchers("/api/about-us/**").permitAll()
                 .antMatchers("/api/system/**").permitAll()
+                .antMatchers("/api/product-stats/**").permitAll()
                 .antMatchers("/api/admins/**").hasRole("ADMIN")
                 // Swagger UI paths
                 .antMatchers("/swagger-ui/**",

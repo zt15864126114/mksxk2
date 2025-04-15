@@ -260,4 +260,31 @@ public class NewsServiceImpl implements NewsService {
             throw new BusinessException("分页获取所有新闻失败: " + e.getMessage());
         }
     }
+
+    /**
+     * 增加新闻浏览量
+     * @param id 新闻ID
+     * @return 更新后的新闻对象
+     */
+    @Override
+    @Transactional
+    public News incrementViews(Long id) {
+        try {
+            log.info("增加新闻浏览量: {}", id);
+            News news = newsRepository.findById(id)
+                    .orElseThrow(() -> new BusinessException("新闻不存在，ID: " + id));
+            
+            // 增加浏览量
+            news.setViews(news.getViews() + 1);
+            News updatedNews = newsRepository.save(news);
+            log.debug("新闻浏览量增加成功，ID: {}, 当前浏览量: {}", id, updatedNews.getViews());
+            
+            return updatedNews;
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("增加新闻浏览量失败: {}, 错误: {}", id, e.getMessage());
+            throw new BusinessException("增加新闻浏览量失败: " + e.getMessage());
+        }
+    }
 }

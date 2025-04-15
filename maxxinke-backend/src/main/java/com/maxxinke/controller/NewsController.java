@@ -224,4 +224,20 @@ public class NewsController {
             return ResponseEntity.ok(newsService.findAll(pageable));
         }
     }
+
+    /**
+     * 增加新闻浏览量
+     * 
+     * @param id 新闻ID
+     * @return 更新后的浏览量
+     */
+    @ApiOperation(value = "增加新闻浏览量", notes = "记录新闻浏览，增加浏览量计数")
+    @PostMapping("/{id}/view")
+    public ResponseEntity<Integer> incrementViews(
+            @ApiParam(value = "新闻ID", required = true)
+            @PathVariable Long id) {
+        log.info("接收到新闻浏览量增加请求, ID: {}", id);
+        News news = newsService.incrementViews(id);
+        return ResponseEntity.ok(news.getViews());
+    }
 } 

@@ -29,6 +29,12 @@ public class News {
     @Column(nullable = false)
     private Integer status = 1;
     
+    @Column(nullable = false)
+    private Integer views = 0;
+    
+    @Column(length = 500)
+    private String summary;
+    
     @Column(name = "create_time", nullable = false, updatable = false)
     private LocalDateTime createTime;
     

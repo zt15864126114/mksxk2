@@ -315,11 +315,18 @@ const NewsPage: React.FC = () => {
             <Row gutter={[24, 16]} align="middle">
               <Col xs={24} md={12}>
                 <Search
-                  placeholder="搜索新闻标题或内容"
+                  placeholder="搜索新闻标题"
                   allowClear
                   enterButton={<><SearchOutlined /> 搜索</>}
                   size="large"
                   onSearch={handleSearch}
+                  defaultValue={searchKeyword}
+                  onChange={(e) => {
+                    // 如果清空搜索框，立即重置搜索
+                    if (!e.target.value) {
+                      handleSearch('');
+                    }
+                  }}
                 />
               </Col>
               <Col xs={24} md={12}>

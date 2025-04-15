@@ -296,7 +296,7 @@ const Products: React.FC = () => {
           pageSize,
           status: 1,
           category: selectedCategory || undefined,
-          keyword: searchKeyword || undefined
+          name: searchKeyword || undefined
         });
         setProducts(response.content);
         setTotal(response.totalElements);
@@ -311,6 +311,7 @@ const Products: React.FC = () => {
   }, [currentPage, selectedCategory, searchKeyword]);
 
   const handleSearch = (value: string) => {
+    console.log('搜索产品:', value);
     setSearchKeyword(value);
     setCurrentPage(1); // 重置到第一页
   };
@@ -344,11 +345,17 @@ const Products: React.FC = () => {
             <Row gutter={[24, 16]} align="middle">
               <Col xs={24} md={12}>
                 <Search
-                  placeholder="搜索产品名称或描述"
+                  placeholder="输入产品名称搜索"
                   allowClear
                   enterButton={<><SearchOutlined /> 搜索</>}
                   size="large"
                   onSearch={handleSearch}
+                  defaultValue={searchKeyword}
+                  onChange={(e) => {
+                    if (!e.target.value) {
+                      handleSearch('');
+                    }
+                  }}
                 />
               </Col>
               <Col xs={24} md={12}>

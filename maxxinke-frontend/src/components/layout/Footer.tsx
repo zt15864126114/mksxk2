@@ -115,7 +115,7 @@ const Footer: React.FC = () => {
         <Row gutter={[40, 40]}>
           <Col xs={24} sm={12} md={8}>
             <h3 className="footer-title">关于我们</h3>
-            <p>麦克斯鑫科技专注于工业自动化领域，致力于为客户提供高品质的自动化解决方案。</p>
+            <p>麦克斯鑫科（山东）新型材料科技有限公司是一家专业从事水处理产品和水泥外加剂的研发、设计、生产与销售的企业。</p>
           </Col>
           <Col xs={24} sm={12} md={8}>
             <h3 className="footer-title">联系方式</h3>
