@@ -9,12 +9,22 @@ export interface AboutUs {
   id: number;
   /** 公司简介 */
   companyIntro: string;
+  /** 公司描述 */
+  description: string;
   /** 核心优势 */
   coreAdvantages: string;
   /** 产品优势 */
   productAdvantages: string;
   /** 应用领域 */
   applicationAreas: string;
+  /** 公司优势 */
+  advantages: string;
+  /** 公司地址 */
+  address: string;
+  /** 联系电话 */
+  phone: string;
+  /** 电子邮箱 */
+  email: string;
   /** 创建时间 */
   createTime: string;
   /** 更新时间 */

@@ -1,161 +1,146 @@
-import React, { useState, useEffect } from 'react';
-import { Layout, Row, Col, Input, Button, Spin, App } from 'antd';
-import { PhoneOutlined, MailOutlined, EnvironmentOutlined } from '@ant-design/icons';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { getContactInfo, ContactInfo } from '../../services/systemService';
+import { Row, Col } from 'antd';
 
-const { Footer: AntFooter } = Layout;
-
-const StyledFooter = styled(AntFooter)`
+const FooterWrapper = styled.footer`
   background: #001529;
+  padding: 60px 0 40px;
+  color: rgba(255, 255, 255, 0.85);
+`;
+
+const Container = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+`;
+
+const Section = styled.div`
+  margin-bottom: 20px;
+`;
+
+const Title = styled.h3`
   color: #fff;
-  padding: 60px 0 20px;
+  font-size: 18px;
+  margin-bottom: 20px;
+  position: relative;
   
-  .footer-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
+  &:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 40px;
+    height: 2px;
+    background: #1890ff;
   }
+`;
+
+const Description = styled.p`
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.8;
+  margin-bottom: 20px;
+`;
+
+const ContactInfo = styled.div`
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.65);
   
-  .footer-title {
-    font-size: 18px;
-    margin-bottom: 20px;
-    color: #fff;
+  svg {
+    font-size: 16px;
+    color: #1890ff;
   }
+`;
+
+const QuickLinks = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+`;
+
+const StyledLink = styled(Link)`
+  color: rgba(255, 255, 255, 0.65);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   
-  .contact-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
+  &:hover {
+    color: #1890ff;
+    transform: translateX(5px);
     
-    .anticon {
-      margin-right: 10px;
-      font-size: 16px;
+    svg {
+      transform: translateX(3px);
     }
   }
   
-  .footer-bottom {
-    text-align: center;
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255,255,255,0.1);
-  }
-  
-  .subscribe-form {
-    display: flex;
-    margin-top: 20px;
-    
-    .ant-input {
-      margin-right: 10px;
-    }
-  }
-  
-  .loading-container {
-    text-align: center;
-    padding: 10px 0;
+  svg {
+    transition: transform 0.3s ease;
   }
 `;
 
 const Footer: React.FC = () => {
-  const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
-  const [loading, setLoading] = useState(false);
-  const { message } = App.useApp();
-
-  useEffect(() => {
-    const fetchContactInfo = async () => {
-      try {
-        setLoading(true);
-        console.log('Footer组件(Layout)：开始获取联系方式数据');
-        
-        const data = await getContactInfo();
-        
-        // 验证数据是否为空对象或所有字段为空字符串
-        const isEmptyData = !data || Object.values(data).every(val => val === '');
-        
-        if (isEmptyData) {
-          console.error('Footer组件(Layout)：获取的联系方式数据为空');
-          // 设置默认数据，确保页面显示内容
-          setContactInfo({
-            tel: '400-123-4567',
-            mobile: '138 8888 8888',
-            email: 'contact@maxxinke.com',
-            serviceEmail: 'service@maxxinke.com',
-            address: '上海市浦东新区张江高科技园区',
-            postcode: '518000',
-            website: 'www.maxxinke.com',
-            wechat: '麦克斯鑫科'
-          });
-        } else {
-          setContactInfo(data);
-        }
-      } catch (error) {
-        console.error('Footer组件(Layout)：获取联系方式失败:', error);
-        // 设置默认数据，确保页面显示内容
-        setContactInfo({
-          tel: '400-123-4567',
-          mobile: '138 8888 8888',
-          email: 'contact@maxxinke.com',
-          serviceEmail: 'service@maxxinke.com',
-          address: '上海市浦东新区张江高科技园区',
-          postcode: '518000',
-          website: 'www.maxxinke.com',
-          wechat: '麦克斯鑫科'
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchContactInfo();
-  }, []);
+  const quickLinks = [
+    { title: '产品中心', path: '/products' },
+    { title: '新闻动态', path: '/news' },
+    { title: '关于我们', path: '/about' },
+    { title: '联系我们', path: '/contact' }
+  ];
 
   return (
-    <StyledFooter>
-      <div className="footer-content">
+    <FooterWrapper>
+      <Container>
         <Row gutter={[40, 40]}>
-          <Col xs={24} sm={12} md={8}>
-            <h3 className="footer-title">关于我们</h3>
-            <p>麦克斯鑫科（山东）新型材料科技有限公司是一家专业从事水处理产品和水泥外加剂的研发、设计、生产与销售的企业。</p>
+          <Col xs={24} sm={24} md={8}>
+            <Section>
+              <Title>关于我们</Title>
+              <Description>
+                麦克斯鑫科（山东）新型材料科技有限公司是一家专业从事水处理产品和水泥外加剂的研发、设计、生产与销售的企业。
+              </Description>
+            </Section>
           </Col>
+          
           <Col xs={24} sm={12} md={8}>
-            <h3 className="footer-title">联系方式</h3>
-            {loading ? (
-              <div className="loading-container">
-                <Spin size="small" />
-              </div>
-            ) : contactInfo ? (
-              <>
-                <div className="contact-item">
-                  <PhoneOutlined />
-                  <span>{contactInfo.tel}</span>
-                </div>
-                <div className="contact-item">
-                  <MailOutlined />
-                  <span>{contactInfo.email}</span>
-                </div>
-                <div className="contact-item">
-                  <EnvironmentOutlined />
-                  <span>{contactInfo.address}</span>
-                </div>
-              </>
-            ) : (
-              <div>暂无联系方式信息</div>
-            )}
+            <Section>
+              <Title>联系方式</Title>
+              <ContactInfo>
+                <span>电话：XXXXXXXXXXXXX</span>
+              </ContactInfo>
+              <ContactInfo>
+                <span>邮箱：130141069@qq.com</span>
+              </ContactInfo>
+              <ContactInfo>
+                <span>地址：XXXXXXXXXXXXX</span>
+              </ContactInfo>
+            </Section>
           </Col>
+          
           <Col xs={24} sm={12} md={8}>
-            <h3 className="footer-title">订阅我们</h3>
-            <p>订阅我们的新闻通讯，获取最新产品信息和行业动态</p>
-            <div className="subscribe-form">
-              <Input placeholder="请输入您的邮箱" />
-              <Button type="primary">订阅</Button>
-            </div>
+            <Section>
+              <Title>快速导航</Title>
+              <QuickLinks>
+                {quickLinks.map((link, index) => (
+                  <StyledLink to={link.path} key={index}>
+                    <span>{link.title}</span>
+                    <svg 
+                      viewBox="0 0 24 24" 
+                      width="16" 
+                      height="16" 
+                      fill="currentColor"
+                    >
+                      <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+                    </svg>
+                  </StyledLink>
+                ))}
+              </QuickLinks>
+            </Section>
           </Col>
         </Row>
-        <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} 麦克斯鑫科技 版权所有</p>
-        </div>
-      </div>
-    </StyledFooter>
+      </Container>
+    </FooterWrapper>
   );
 };
 

@@ -29,6 +29,11 @@ export interface NewsListParams {
   keyword?: string;
 }
 
+export interface NewsType {
+  id: string;
+  name: string;
+}
+
 export const newsService = {
   // 获取新闻列表
   getNews: async (params: NewsListParams): Promise<NewsListResponse> => {
@@ -105,7 +110,7 @@ export const newsService = {
   },
 
   // 获取新闻类型
-  getNewsTypes: async (): Promise<string[]> => {
+  getNewsTypes: async (): Promise<NewsType[]> => {
     try {
       // 直接从新闻列表中提取类型
       console.log('从新闻列表中提取新闻类型...');
@@ -124,17 +129,30 @@ export const newsService = {
           if (news.type) types.add(news.type);
         });
         
-        const typeArray = Array.from(types);
+        // 将类型转换为所需的格式
+        const typeArray = Array.from(types).map(type => ({
+          id: type,
+          name: type
+        }));
+        
         console.log('成功从新闻列表提取类型:', typeArray);
         return typeArray;
       } else {
         console.warn('新闻列表为空，无法提取类型');
-        return ['公司新闻', '行业动态', '技术分享'];
+        return [
+          { id: 'company', name: '公司新闻' },
+          { id: 'industry', name: '行业动态' },
+          { id: 'tech', name: '技术分享' }
+        ];
       }
     } catch (error) {
       console.error('获取新闻类型失败', error);
       // 如果出错，返回默认值以防止页面崩溃
-      return ['公司新闻', '行业动态', '技术分享'];
+      return [
+        { id: 'company', name: '公司新闻' },
+        { id: 'industry', name: '行业动态' },
+        { id: 'tech', name: '技术分享' }
+      ];
     }
   },
 

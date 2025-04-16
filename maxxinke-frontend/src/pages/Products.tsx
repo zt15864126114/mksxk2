@@ -353,11 +353,26 @@ const SkeletonCard = styled(Card)`
   overflow: hidden;
   border: none;
   box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
-  height: 100%;
+  height: 440px;
+
+  .ant-skeleton {
+    padding: 28px;
+  }
 
   .ant-skeleton-image {
     width: 100% !important;
     height: 240px !important;
+    border-radius: 0 !important;
+  }
+
+  .ant-skeleton-content {
+    padding-top: 28px;
+    .ant-skeleton-title {
+      margin-bottom: 16px !important;
+    }
+    .ant-skeleton-paragraph {
+      margin-top: 16px !important;
+    }
   }
 `;
 
@@ -480,11 +495,12 @@ const StatItem = styled.div`
 
 // 动画变体
 const containerVariants = {
-  hidden: { opacity:.0 },
+  hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1
+      staggerChildren: 0.1,
+      delayChildren: 0.2
     }
   }
 };
@@ -502,79 +518,99 @@ const itemVariants = {
 };
 
 const headerVariants = {
-  hidden: { opacity: 0, y: -20 },
+  hidden: { opacity: 0, y: -30 },
   visible: {
     opacity: 1, 
     y: 0,
     transition: {
       type: "spring",
-      delay: 0.2,
-      stiffness: 100
+      stiffness: 100,
+      damping: 15,
+      delay: 0.2
     }
   }
 };
 
 const subtitleVariants = {
-  hidden: { opacity: 0, y: -10 },
+  hidden: { opacity: 0, y: -20 },
   visible: {
     opacity: 1, 
     y: 0,
     transition: {
       type: "spring",
-      delay: 0.4,
-      stiffness: 100
+      stiffness: 100,
+      damping: 15,
+      delay: 0.3
     }
   }
 };
 
 const statsVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
       type: "spring",
-      delay: 0.6,
-      stiffness: 100
+      stiffness: 100,
+      damping: 15,
+      delay: 0.4
+    }
+  }
+};
+
+const statItemVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15
     }
   }
 };
 
 const filterVariants = {
-  hidden: { opacity: 0, y: -20 },
+  hidden: { opacity: 0, y: 30 },
   visible: { 
     opacity: 1, 
     y: 0,
     transition: {
-      duration: 0.6,
-      ease: "easeOut"
+      type: "spring",
+      stiffness: 100,
+      damping: 15,
+      delay: 0.3
     }
   }
 };
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.1,
-      duration: 0.5,
-      ease: "easeOut"
-    }
-  }),
-  exit: { 
+  hidden: (i: number) => ({
     opacity: 0,
     y: 50,
+    scale: 0.9,
+    x: i % 2 === 0 ? -30 : 30
+  }),
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    x: 0,
     transition: {
-      duration: 0.3
+      type: "spring",
+      stiffness: 100,
+      damping: 15
     }
   },
   hover: {
+    y: -8,
     scale: 1.02,
-    boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
     transition: {
-      duration: 0.2
+      type: "spring",
+      stiffness: 300,
+      damping: 20
     }
   }
 };
@@ -585,8 +621,10 @@ const paginationVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      delay: 0.3,
-      duration: 0.5
+      delay: 0.5,
+      type: "spring",
+      stiffness: 100,
+      damping: 15
     }
   }
 };
@@ -597,8 +635,10 @@ const emptyVariants = {
     opacity: 1,
     scale: 1,
     transition: {
-      duration: 0.5,
-      ease: "backOut"
+      type: "spring",
+      stiffness: 100,
+      damping: 15,
+      delay: 0.2
     }
   }
 };
@@ -703,32 +743,6 @@ const Products: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // 渲染骨架屏
-  const renderSkeletons = () => (
-    <Row gutter={[24, 24]}>
-      {Array(6).fill(null).map((_, index) => (
-        <Col key={index} xs={24} sm={12} md={8}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ 
-              opacity: 1, 
-              y: 0,
-              transition: {
-                delay: index * 0.1
-              }
-            }}
-          >
-            <Skeleton active>
-              <Skeleton.Image style={{ width: '100%', height: 200 }} />
-              <Skeleton.Input style={{ width: '60%', marginTop: 16 }} />
-              <Skeleton.Input style={{ width: '100%', marginTop: 8 }} />
-            </Skeleton>
-          </motion.div>
-        </Col>
-      ))}
-    </Row>
-  );
-
   return (
     <>
       <HeaderSection>
@@ -753,18 +767,24 @@ const Products: React.FC = () => {
             animate="visible"
             variants={statsVariants}
           >
-            <StatItem>
-              <div className="stat-value">{totalProducts}</div>
-              <div className="stat-label">产品总数</div>
-            </StatItem>
-            <StatItem>
-              <div className="stat-value">{categories.length}</div>
-              <div className="stat-label">产品类别</div>
-            </StatItem>
-            <StatItem>
-              <div className="stat-value">100%</div>
-              <div className="stat-label">品质保证</div>
-            </StatItem>
+            <motion.div variants={statItemVariants}>
+              <StatItem>
+                <div className="stat-value">{totalProducts}</div>
+                <div className="stat-label">产品总数</div>
+              </StatItem>
+            </motion.div>
+            <motion.div variants={statItemVariants}>
+              <StatItem>
+                <div className="stat-value">{categories.length}</div>
+                <div className="stat-label">产品类别</div>
+              </StatItem>
+            </motion.div>
+            <motion.div variants={statItemVariants}>
+              <StatItem>
+                <div className="stat-value">100%</div>
+                <div className="stat-label">品质保证</div>
+              </StatItem>
+            </motion.div>
           </StatsContainer>
         </Container>
       </HeaderSection>
@@ -835,54 +855,66 @@ const Products: React.FC = () => {
               </Row>
             </FilterContainer>
             
-            {loading ? (
-              <LoadingContainer>
-                {renderSkeletons()}
-              </LoadingContainer>
-            ) : products.length > 0 ? (
-              <>
-                <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait">
+              {loading ? (
+                <motion.div 
+                  key="skeleton"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
                   <Row gutter={[24, 24]}>
-                    {products.map((product, index) => (
-                      <Col key={product.id} xs={24} sm={12} md={8}>
+                    {Array.from({ length: pageSize }).map((_, index) => (
+                      <Col key={`skeleton-${index}`} xs={24} sm={12} md={8}>
+                        <SkeletonCard>
+                          <Skeleton 
+                            active 
+                            avatar={{ shape: 'square', size: 240 }} 
+                            paragraph={{ rows: 3 }} 
+                          />
+                        </SkeletonCard>
+                      </Col>
+                    ))}
+                  </Row>
+                </motion.div>
+              ) : products.length > 0 ? (
+                <motion.div 
+                  key="products"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Row gutter={[24, 24]}>
+                    {products.map((item, index) => (
+                      <Col key={item.id} xs={24} sm={12} md={8}>
                         <ProductCardWrapper
                           initial="hidden"
-                          animate="visible"
-                          exit="exit"
+                          whileInView="visible"
+                          viewport={{ once: true, amount: 0.2 }}
                           variants={cardVariants}
                           custom={index}
                           whileHover="hover"
-                          layoutId={`product-${product.id}`}
                         >
-                          <Link to={`/products/${product.id}`}>
+                          <Link to={`/products/${item.id}`}>
                             <ProductCard
                               hoverable
                               cover={
-                                <motion.div
-                                  whileHover={{ scale: 1.1 }}
-                                  transition={{ type: "tween", duration: 0.5 }}
-                                >
-                                  <motion.img
-                                    alt={product.name}
-                                    src={product.image || '/placeholder.png'}
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ duration: 0.3 }}
-                                    onError={(e: any) => {
-                                      e.target.src = '/placeholder.png';
-                                    }}
-                                  />
-                                </motion.div>
+                                <img
+                                  alt={item.name}
+                                  src={item.image || '/placeholder.png'}
+                                />
                               }
                             >
-                              <ProductTitle>{product.name}</ProductTitle>
-                              <ProductDescription>{product.description}</ProductDescription>
+                              <ProductTitle>{item.name}</ProductTitle>
+                              <ProductDescription>{item.description}</ProductDescription>
                               <ProductFooter>
                                 <ProductCategory>
-                                  <Tag color="blue">{product.category}</Tag>
+                                  <Tag icon={<AppstoreOutlined />}>{item.category || '未分类'}</Tag>
                                 </ProductCategory>
                                 <ViewDetail>
-                                  查看详情 <motion.span whileHover={{ x: 5 }}><RightOutlined /></motion.span>
+                                  查看详情 <RightOutlined />
                                 </ViewDetail>
                               </ProductFooter>
                             </ProductCard>
@@ -891,37 +923,37 @@ const Products: React.FC = () => {
                       </Col>
                     ))}
                   </Row>
-                </AnimatePresence>
-                
-                <PaginationWrapper
+                  <PaginationWrapper 
+                    initial="hidden"
+                    animate="visible"
+                    variants={paginationVariants}
+                  >
+                    <Pagination
+                      current={currentPage}
+                      total={total}
+                      pageSize={pageSize}
+                      onChange={handlePageChange}
+                      showSizeChanger={false}
+                      showTotal={(total) => `共 ${total} 条产品`}
+                    />
+                  </PaginationWrapper>
+                </motion.div>
+              ) : (
+                <EmptyContainer 
+                  key="empty"
                   initial="hidden"
                   animate="visible"
-                  variants={paginationVariants}
+                  variants={emptyVariants}
                 >
-                  <Pagination
-                    current={currentPage}
-                    total={total}
-                    pageSize={pageSize}
-                    onChange={handlePageChange}
-                    showSizeChanger={false}
-                    showTotal={(total) => `共 ${total} 个产品`}
-                  />
-                </PaginationWrapper>
-              </>
-            ) : (
-              <EmptyContainer
-                initial="hidden"
-                animate="visible" 
-                variants={emptyVariants}
-              >
-                <ShoppingOutlined className="empty-icon" />
-                <div className="empty-text">
-                  {searchKeyword || selectedCategory ? 
-                    `没有找到${selectedCategory ? `类别为"${selectedCategory}"的` : ''}${searchKeyword ? `包含"${searchKeyword}"的` : ''}产品` : 
-                    '暂无产品数据'}
-                </div>
-              </EmptyContainer>
-            )}
+                  <ShoppingOutlined className="empty-icon" />
+                  <div className="empty-text">
+                    {searchKeyword || selectedCategory ? 
+                      `没有找到${selectedCategory ? `分类为"${selectedCategory}"的` : ''}${searchKeyword ? `包含"${searchKeyword}"的` : ''}产品` : 
+                      '暂无产品数据'}
+                  </div>
+                </EmptyContainer>
+              )}
+            </AnimatePresence>
           </motion.div>
         </Container>
       </ProductsWrapper>

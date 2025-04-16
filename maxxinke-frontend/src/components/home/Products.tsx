@@ -7,21 +7,10 @@ import { motion } from 'framer-motion';
 import { ArrowRightOutlined } from '@ant-design/icons';
 
 const ProductsWrapper = styled.section`
-  padding: 100px 0;
-  background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+  padding: 80px 0;
+  background: #ffffff;
   position: relative;
   overflow: hidden;
-
-  &:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 200px;
-    background: linear-gradient(180deg, rgba(248,249,250,0.8) 0%, rgba(255,255,255,0) 100%);
-    pointer-events: none;
-  }
 `;
 
 const Container = styled.div`
@@ -160,7 +149,6 @@ const ViewMoreButton = styled(motion.div)`
     border-radius: 25px;
     font-weight: 500;
     box-shadow: 0 6px 16px rgba(24, 144, 255, 0.25);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -168,16 +156,7 @@ const ViewMoreButton = styled(motion.div)`
     .icon {
       margin-left: 8px;
       font-size: 16px;
-      transition: transform 0.3s ease;
-    }
-    
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(24, 144, 255, 0.35);
-      
-      .icon {
-        transform: translateX(4px);
-      }
+      display: inline-block;
     }
   }
 `;
@@ -344,12 +323,30 @@ const Products: React.FC = () => {
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.1 }}
                 variants={buttonVariants}
-                whileTap="tap"
               >
-                <Button type="primary" className="btn" onClick={handleViewMore}>
+                <motion.button 
+                  className="btn ant-btn ant-btn-primary"
+                  onClick={handleViewMore}
+                  whileHover={{
+                    scale: 1.03, 
+                    boxShadow: "0 10px 25px rgba(24, 144, 255, 0.4)",
+                    transition: { type: "spring", stiffness: 300 }
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                >
                   查看更多产品
-                  <ArrowRightOutlined className="icon" />
-                </Button>
+                  <motion.span 
+                    className="icon"
+                    style={{ display: 'inline-block' }}
+                    whileHover={{ 
+                      x: 6, 
+                      rotate: 5, 
+                      transition: { type: "spring", stiffness: 300 }
+                    }}
+                  >
+                    <ArrowRightOutlined />
+                  </motion.span>
+                </motion.button>
               </ViewMoreButton>
             </div>
           </>

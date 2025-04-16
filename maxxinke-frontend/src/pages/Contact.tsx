@@ -6,15 +6,18 @@ import {
   MailOutlined, 
   EnvironmentOutlined,
   GlobalOutlined,
-  SendOutlined
+  SendOutlined,
+  WechatOutlined,
+  CustomerServiceOutlined
 } from '@ant-design/icons';
 import { messageService } from '../services/messageService';
 import { getContactInfo, ContactInfo } from '../services/systemService';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const { TextArea } = Input;
 
 const ContactWrapper = styled.div`
-  padding: 80px 0;
+  padding: 0;
   background: linear-gradient(to bottom, #f8f9fa, #f0f2f5);
   min-height: 100vh;
 `;
@@ -22,13 +25,15 @@ const ContactWrapper = styled.div`
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 16px;
+  padding: 0 20px;
+  position: relative;
+  z-index: 3;
 `;
 
 const HeaderSection = styled.div`
   background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
-  padding: 60px 0 120px;
-  margin-bottom: -70px;
+  padding: 80px 0 140px;
+  margin-bottom: -90px;
   position: relative;
   overflow: hidden;
   
@@ -57,46 +62,56 @@ const HeaderSection = styled.div`
   }
 `;
 
-const HeaderTitle = styled.h1`
+const HeaderTitle = styled(motion.h1)`
   text-align: center;
   font-size: 42px;
   font-weight: 700;
   color: white;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   position: relative;
   z-index: 3;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
-const HeaderSubtitle = styled.p`
+const HeaderSubtitle = styled(motion.p)`
   text-align: center;
-  font-size: 16px;
+  font-size: 18px;
   color: rgba(255, 255, 255, 0.9);
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto;
+  line-height: 1.6;
   position: relative;
   z-index: 3;
 `;
 
-const ContactCard = styled(Card)`
+const MainContent = styled.div`
+  padding: 120px 0 40px;
+  position: relative;
+  z-index: 3;
+`;
+
+const ContactCard = styled(motion(Card))`
   height: 100%;
   border-radius: 12px;
   overflow: hidden;
   border: none;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   
   &:hover {
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   }
   
   .ant-card-head {
     border-bottom: 1px solid #f0f0f0;
     padding: 16px 24px;
+    background: #fafafa;
     
     .ant-card-head-title {
       font-size: 18px;
       font-weight: 600;
+      color: #1890ff;
     }
   }
   
@@ -110,7 +125,7 @@ const ContactCard = styled(Card)`
     margin-right: 16px;
     background: #e6f7ff;
     padding: 12px;
-    border-radius: 50%;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -135,7 +150,7 @@ const ContactCard = styled(Card)`
       
       .contact-label {
         font-size: 15px;
-        color: #999;
+        color: #666;
         margin-bottom: 8px;
       }
       
@@ -149,30 +164,33 @@ const ContactCard = styled(Card)`
   }
 `;
 
-const MessageCard = styled(Card)`
+const MessageCard = styled(motion(Card))`
   height: 100%;
   border-radius: 12px;
   overflow: hidden;
   border: none;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   
   &:hover {
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   }
   
   .ant-card-head {
     border-bottom: 1px solid #f0f0f0;
     padding: 16px 24px;
+    background: #fafafa;
     
     .ant-card-head-title {
       font-size: 18px;
       font-weight: 600;
+      color: #1890ff;
     }
   }
   
   .ant-card-body {
-    padding: 24px;
+    padding: 32px;
   }
   
   .ant-form-item-label > label {
@@ -198,26 +216,46 @@ const MessageCard = styled(Card)`
 `;
 
 const LoadingContainer = styled.div`
-  text-align: center;
-  padding: 40px 0;
-  width: 100%;
-  
-  .ant-spin {
-    .ant-spin-dot-item {
-      background-color: #1890ff;
-    }
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 64px);
+  background: linear-gradient(to bottom, #f8f9fa, #f0f2f5);
 `;
 
 const StyledButton = styled(Button)`
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
   
   .anticon {
     margin-right: 8px;
   }
 `;
+
+// 动画变体
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100
+    }
+  }
+};
 
 const Contact: React.FC = () => {
   const [form] = Form.useForm();
@@ -226,19 +264,15 @@ const Contact: React.FC = () => {
   const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
   const { message } = App.useApp();
 
-  // 获取联系方式数据
   useEffect(() => {
     const fetchContactInfo = async () => {
       try {
         setContactLoading(true);
         const data = await getContactInfo();
-        
-        // 验证数据是否为空对象或所有字段为空字符串
         const isEmptyData = !data || Object.values(data).every(val => val === '');
         
         if (isEmptyData) {
           console.error('联系页面：获取的联系方式数据为空');
-          // 设置默认数据，确保页面显示内容
           setContactInfo({
             tel: '0755-12345678',
             mobile: '138 8888 8888',
@@ -253,176 +287,211 @@ const Contact: React.FC = () => {
           setContactInfo(data);
         }
       } catch (error) {
-        console.error('联系页面：获取联系方式失败:', error);
-        // 设置默认数据，确保页面显示内容
-        setContactInfo({
-          tel: '0755-12345678',
-          mobile: '138 8888 8888',
-          email: 'info@maxxinke.com',
-          serviceEmail: 'service@maxxinke.com',
-          address: '深圳市宝安区新安街道某某工业园A栋5楼',
-          postcode: '518000',
-          website: 'www.maxxinke.com',
-          wechat: '麦克斯鑫科'
-        });
+        console.error('获取联系方式失败:', error);
+        message.error('获取联系方式失败，请刷新重试');
       } finally {
         setContactLoading(false);
       }
     };
-    
+
     fetchContactInfo();
-  }, []);
+  }, [message]);
 
   const handleSubmit = async (values: any) => {
     try {
-      setFormLoading(true);
-      await messageService.create({
-        name: values.name,
-        email: values.email,
-        phone: values.phone,
-        content: values.message
-      });
-      message.success('留言提交成功，我们会尽快与您联系！');
+      const { name, contact, content } = values;
+      const isEmail = contact.includes('@');
+      
+      const messageData = {
+        name,
+        content,
+        status: 0,
+        ...(isEmail ? { email: contact, phone: '' } : { phone: contact, email: '' })
+      };
+
+      await messageService.create(messageData);
+      message.success('提交成功！');
       form.resetFields();
     } catch (error) {
+      console.error('提交失败:', error);
       message.error('提交失败，请稍后重试');
-      console.error('留言提交失败:', error);
-    } finally {
-      setFormLoading(false);
     }
   };
 
+  if (contactLoading) {
+    return (
+      <LoadingContainer>
+        <Spin size="large" />
+      </LoadingContainer>
+    );
+  }
+
   return (
-    <>
+    <ContactWrapper>
       <HeaderSection>
         <Container>
-          <HeaderTitle>联系我们</HeaderTitle>
-          <HeaderSubtitle>让我们成为您的合作伙伴，共创美好未来</HeaderSubtitle>
+          <HeaderTitle
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            联系我们
+          </HeaderTitle>
+          <HeaderSubtitle
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            如果您有任何问题或建议，欢迎随时与我们联系，我们将竭诚为您服务
+          </HeaderSubtitle>
         </Container>
       </HeaderSection>
-    
-      <ContactWrapper>
-        <Container>
-          <Row gutter={[32, 32]}>
-            <Col xs={24} md={12}>
-              <ContactCard title="联系方式">
-                {contactLoading ? (
-                  <LoadingContainer>
-                    <Spin size="large" />
-                    <div style={{ marginTop: '16px', color: '#999' }}>加载中...</div>
-                  </LoadingContainer>
-                ) : contactInfo ? (
-                  <>
-                    <div className="contact-item">
-                      <PhoneOutlined className="icon" />
-                      <div className="contact-content">
-                        <div className="contact-label">电话</div>
-                        <div className="contact-value">{contactInfo.tel}</div>
-                        <div className="contact-value">{contactInfo.mobile}</div>
-                      </div>
-                    </div>
-                    
-                    <div className="contact-item">
-                      <MailOutlined className="icon" />
-                      <div className="contact-content">
-                        <div className="contact-label">邮箱</div>
-                        <div className="contact-value">{contactInfo.email}</div>
-                        <div className="contact-value">{contactInfo.serviceEmail}</div>
-                      </div>
-                    </div>
-                    
-                    <div className="contact-item">
-                      <EnvironmentOutlined className="icon" />
-                      <div className="contact-content">
-                        <div className="contact-label">地址</div>
-                        <div className="contact-value">{contactInfo.address}</div>
-                        <div className="contact-value">邮编：{contactInfo.postcode}</div>
-                      </div>
-                    </div>
-                    
-                    <div className="contact-item">
-                      <GlobalOutlined className="icon" />
-                      <div className="contact-content">
-                        <div className="contact-label">其他</div>
-                        <div className="contact-value">网址：{contactInfo.website}</div>
-                        <div className="contact-value">微信公众号：{contactInfo.wechat}</div>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div>暂无联系方式信息</div>
-                )}
-              </ContactCard>
-            </Col>
 
-            <Col xs={24} md={12}>
-              <MessageCard title="在线留言">
-                <Form
-                  form={form}
-                  layout="vertical"
-                  onFinish={handleSubmit}
+      <Container>
+        <MainContent>
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <Row gutter={[24, 24]}>
+              <Col xs={24} lg={12}>
+                <ContactCard
+                  variants={itemVariants}
+                  title="联系方式"
+                  extra={<CustomerServiceOutlined style={{ fontSize: 24, color: '#1890ff' }} />}
                 >
-                  <Form.Item
-                    name="name"
-                    label="姓名"
-                    rules={[{ required: true, message: '请输入您的姓名' }]}
+                  <div className="contact-item">
+                    <div className="icon">
+                      <PhoneOutlined />
+                    </div>
+                    <div className="contact-content">
+                      <div className="contact-label">电话</div>
+                      <div className="contact-value">{contactInfo?.tel}</div>
+                      <div className="contact-value">{contactInfo?.mobile}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="contact-item">
+                    <div className="icon">
+                      <MailOutlined />
+                    </div>
+                    <div className="contact-content">
+                      <div className="contact-label">邮箱</div>
+                      <div className="contact-value">{contactInfo?.email}</div>
+                      <div className="contact-value">{contactInfo?.serviceEmail}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="contact-item">
+                    <div className="icon">
+                      <EnvironmentOutlined />
+                    </div>
+                    <div className="contact-content">
+                      <div className="contact-label">地址</div>
+                      <div className="contact-value">{contactInfo?.address}</div>
+                      <div className="contact-value">邮编：{contactInfo?.postcode}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="contact-item">
+                    <div className="icon">
+                      <WechatOutlined />
+                    </div>
+                    <div className="contact-content">
+                      <div className="contact-label">微信公众号</div>
+                      <div className="contact-value">{contactInfo?.wechat}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="contact-item">
+                    <div className="icon">
+                      <GlobalOutlined />
+                    </div>
+                    <div className="contact-content">
+                      <div className="contact-label">官方网站</div>
+                      <div className="contact-value">{contactInfo?.website}</div>
+                    </div>
+                  </div>
+                </ContactCard>
+              </Col>
+              
+              <Col xs={24} lg={12}>
+                <MessageCard
+                  variants={itemVariants}
+                  title="在线留言"
+                  extra={<SendOutlined style={{ fontSize: 24, color: '#1890ff' }} />}
+                >
+                  <Form
+                    form={form}
+                    layout="vertical"
+                    onFinish={handleSubmit}
                   >
-                    <Input placeholder="请输入您的姓名" />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="phone"
-                    label="电话"
-                    rules={[
-                      { required: true, message: '请输入您的联系电话' },
-                      { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码' }
-                    ]}
-                  >
-                    <Input placeholder="请输入您的联系电话" />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="email"
-                    label="邮箱"
-                    rules={[
-                      { type: 'email', message: '请输入正确的邮箱地址' }
-                    ]}
-                  >
-                    <Input placeholder="请输入您的邮箱地址" />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="message"
-                    label="留言内容"
-                    rules={[{ required: true, message: '请输入留言内容' }]}
-                  >
-                    <TextArea 
-                      rows={5} 
-                      placeholder="请输入您的留言内容、需求或问题，我们将尽快与您联系"
-                      maxLength={500}
-                      showCount
-                    />
-                  </Form.Item>
-
-                  <Form.Item>
-                    <StyledButton 
-                      type="primary" 
-                      htmlType="submit"
-                      loading={formLoading}
-                      block
-                      size="large"
-                      icon={<SendOutlined />}
+                    <Form.Item
+                      name="name"
+                      label="姓名"
+                      rules={[{ required: true, message: '请输入您的姓名' }]}
                     >
-                      提交留言
-                    </StyledButton>
-                  </Form.Item>
-                </Form>
-              </MessageCard>
-            </Col>
-          </Row>
-        </Container>
-      </ContactWrapper>
-    </>
+                      <Input placeholder="请输入您的姓名" />
+                    </Form.Item>
+                    
+                    <Form.Item
+                      name="contact"
+                      label="联系方式"
+                      rules={[
+                        { required: true, message: '请输入您的联系方式' },
+                        {
+                          validator: (_, value) => {
+                            if (!value) return Promise.resolve();
+                            // 邮箱格式验证
+                            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                            // 手机号格式验证（中国大陆手机号）
+                            const phoneRegex = /^1[3-9]\d{9}$/;
+                            if (value.includes('@') && !emailRegex.test(value)) {
+                              return Promise.reject('请输入有效的邮箱地址');
+                            }
+                            if (!value.includes('@') && !phoneRegex.test(value)) {
+                              return Promise.reject('请输入有效的手机号码');
+                            }
+                            return Promise.resolve();
+                          }
+                        }
+                      ]}
+                    >
+                      <Input placeholder="请输入您的手机号码或邮箱地址" />
+                    </Form.Item>
+                    
+                    <Form.Item
+                      name="content"
+                      label="留言内容"
+                      rules={[{ required: true, message: '请输入留言内容' }]}
+                    >
+                      <TextArea
+                        placeholder="请输入您想咨询的内容"
+                        rows={4}
+                        showCount
+                        maxLength={500}
+                      />
+                    </Form.Item>
+                    
+                    <Form.Item>
+                      <StyledButton
+                        type="primary"
+                        htmlType="submit"
+                        loading={formLoading}
+                        icon={<SendOutlined />}
+                      >
+                        提交留言
+                      </StyledButton>
+                    </Form.Item>
+                  </Form>
+                </MessageCard>
+              </Col>
+            </Row>
+          </motion.div>
+        </MainContent>
+      </Container>
+    </ContactWrapper>
   );
 };
 
