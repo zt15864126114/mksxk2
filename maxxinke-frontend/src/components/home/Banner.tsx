@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Carousel, Button } from 'antd';
 import styled from 'styled-components';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+// @ts-ignore
+import CountUp from 'react-countup';
 
 // 添加动画组件
 const MotionDiv = motion.div;
@@ -51,11 +53,12 @@ const BannerWrapper = styled.div`
     padding: 0 20px;
     
     h1 {
-      font-size: 48px;
+      font-size: 52px;
       margin-bottom: 20px;
       font-weight: bold;
       color: #fff;
       text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      line-height: 1.2;
     }
     
     p {
@@ -88,13 +91,54 @@ const BannerWrapper = styled.div`
   .ant-carousel .slick-dots-bottom {
     bottom: 30px;
   }
+  
+  .company-stats {
+    position: absolute;
+    bottom: 100px;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    margin: 0 auto;
+    width: 80%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+  
+  .stat-item {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    padding: 15px 20px;
+    text-align: center;
+    flex: 1;
+    margin: 0 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    h3 {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: white;
+    }
+    
+    p {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.8);
+      margin: 0;
+    }
+  }
 `;
 
 const ExploreButton = styled(Button)`
-  height: 48px;
+  height: 50px;
   padding: 0 30px;
   font-size: 16px;
-  border-radius: 24px;
+  border-radius: 25px;
   background: #1890ff;
   border: none;
   font-weight: 500;
@@ -152,33 +196,100 @@ const buttonVariants = {
   }
 };
 
+const statsVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { 
+      duration: 0.8, 
+      delay: 1, 
+      ease: "easeOut" 
+    } 
+  }
+};
+
+// 统计数字动画组件
+const AnimatedStat: React.FC<{ value: string; label: string }> = ({ value, label }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  
+  // 从字符串中提取数字部分
+  const numericValue = parseInt(value.replace(/[^0-9]/g, ''), 10);
+  
+  useEffect(() => {
+    // 设置延迟，等待组件进入视图
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="stat-item">
+      <h3>
+        {isVisible ? (
+          <CountUp
+            start={0}
+            end={numericValue}
+            duration={2.5}
+            separator=","
+            suffix="+"
+            useEasing={true}
+          />
+        ) : "0+"}
+      </h3>
+      <p>{label}</p>
+    </div>
+  );
+};
+
 const Banner: React.FC = () => {
   const navigate = useNavigate();
   
   const banners = [
     {
       id: 1,
-      image: '/banner1.jpg',
-      title: '专业水处理产品制造商',
-      description: '致力于提供高品质的水处理产品和水泥外加剂解决方案，以先进技术和优质服务为客户创造价值。',
-      buttonText: '了解我们的产品',
+      image: '/images/banner/water-treatment-plant.jpg',
+      title: "专业水处理技术领导者",
+      description: "专注水处理产品研发与制造，为工业与市政客户提供全方位水处理解决方案，引领行业技术创新。",
+      buttonText: "探索产品系列",
       link: '/products'
     },
     {
       id: 2,
-      image: '/banner2.jpg',
-      title: '创新环保技术',
-      description: '以创新科技助力环保事业，打造绿色可持续发展，为水资源保护和环境改善贡献力量。',
-      buttonText: '探索环保技术',
+      image: '/images/banner/industrial-water.jpg',
+      title: "创新环保技术",
+      description: "以创新科技助力环保事业，打造绿色可持续发展，为水资源保护和环境改善贡献力量。",
+      buttonText: "了解环保技术",
       link: '/about'
     },
     {
       id: 3,
-      image: '/banner3.jpg',
-      title: '优质服务保障',
-      description: '专业的技术团队，为您提供全方位的技术支持和服务，确保您的每一次使用都能获得满意的效果。',
-      buttonText: '联系我们',
+      image: '/images/banner/engineers.jpg',
+      title: "优质服务保障",
+      description: "致力于提供高品质的水处理产品和水泥外加剂解决方案，以先进技术和优质服务为客户创造价值。",
+      buttonText: "联系我们",
       link: '/contact'
+    }
+  ];
+
+  const stats = [
+    {
+      value: "10+",
+      label: "年专业经验"
+    },
+    {
+      value: "500+",
+      label: "企业客户"
+    },
+    {
+      value: "100+",
+      label: "成功案例"
+    },
+    {
+      value: "20+",
+      label: "技术专利"
     }
   ];
 
@@ -235,6 +346,21 @@ const Banner: React.FC = () => {
           </div>
         ))}
       </Carousel>
+      
+      <MotionDiv
+        className="company-stats"
+        initial="hidden"
+        animate="visible"
+        variants={statsVariants}
+      >
+        {stats.map((stat, index) => (
+          <AnimatedStat 
+            key={index}
+            value={stat.value}
+            label={stat.label}
+          />
+        ))}
+      </MotionDiv>
     </BannerWrapper>
   );
 };

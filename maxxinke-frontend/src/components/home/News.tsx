@@ -3,8 +3,9 @@ import { Row, Col, Card, Button, Spin } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { newsService } from '../../services/newsService';
-import { CalendarOutlined, EyeOutlined } from '@ant-design/icons';
+import { CalendarOutlined, EyeOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import { motion } from 'framer-motion';
 
 const NewsWrapper = styled.section`
   padding: 100px 0;
@@ -35,39 +36,44 @@ const Container = styled.div`
 const SectionTitle = styled.div`
   text-align: center;
   margin-bottom: 80px;
+`;
 
-  h2 {
-    font-size: 42px;
-    font-weight: 600;
-    margin-bottom: 24px;
-    color: #1a1a1a;
-    position: relative;
-    display: inline-block;
+const AnimatedTitle = styled(motion.h2)`
+  font-size: 42px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #1a1a1a;
+  position: relative;
+  display: inline-block;
 
-    &:after {
-      content: '';
-      position: absolute;
-      bottom: -12px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 80px;
-      height: 4px;
-      background: linear-gradient(90deg, #1890ff 0%, #69c0ff 100%);
-      border-radius: 2px;
-    }
-  }
-
-  p {
-    color: #666;
-    font-size: 18px;
-    max-width: 700px;
-    margin: 0 auto;
-    line-height: 1.8;
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #1890ff 0%, #69c0ff 100%);
+    border-radius: 2px;
   }
 `;
 
-const NewsCard = styled(Card)`
+const AnimatedDescription = styled(motion.p)`
+  color: #666;
+  font-size: 18px;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.8;
+`;
+
+const NewsCardWrapper = styled(motion.div)`
+  height: 100%;
   margin-bottom: 24px;
+`;
+
+const NewsCard = styled(Card)`
+  height: 100%;
   border-radius: 16px;
   overflow: hidden;
   border: none;
@@ -164,19 +170,36 @@ const NewsInfo = styled.div`
   }
 `;
 
-const ViewMoreButton = styled(Button)`
+const ViewMoreButton = styled(motion.div)`
+  display: inline-block;
   margin-top: 60px;
-  padding: 0 48px;
-  height: 48px;
-  font-size: 18px;
-  border-radius: 24px;
-  font-weight: 500;
-  box-shadow: 0 6px 16px rgba(24, 144, 255, 0.25);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(24, 144, 255, 0.35);
+  
+  .btn {
+    padding: 0 48px;
+    height: 50px;
+    font-size: 18px;
+    border-radius: 25px;
+    font-weight: 500;
+    box-shadow: 0 6px 16px rgba(24, 144, 255, 0.25);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    .icon {
+      margin-left: 8px;
+      font-size: 16px;
+      transition: transform 0.3s ease;
+    }
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(24, 144, 255, 0.35);
+      
+      .icon {
+        transform: translateX(4px);
+      }
+    }
   }
 `;
 
@@ -190,6 +213,61 @@ const LoadingContainer = styled.div`
     }
   }
 `;
+
+// 定义动画变体
+const titleVariants = {
+  hidden: { opacity: 0, y: -20 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { 
+      duration: 0.8,
+      ease: "easeOut" 
+    } 
+  }
+};
+
+const descriptionVariants = {
+  hidden: { opacity: 0, y: -10 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { 
+      duration: 0.8,
+      delay: 0.2,
+      ease: "easeOut" 
+    } 
+  }
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: (i: number) => ({ 
+    opacity: 1, 
+    y: 0, 
+    transition: { 
+      duration: 0.6,
+      delay: 0.1 * i,
+      ease: "easeOut" 
+    } 
+  })
+};
+
+const buttonVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { 
+      duration: 0.6,
+      delay: 0.8,
+      ease: "easeOut" 
+    } 
+  },
+  tap: { 
+    scale: 0.98 
+  }
+};
 
 const News: React.FC = () => {
   const [news, setNews] = useState<any[]>([]);
@@ -227,9 +305,24 @@ const News: React.FC = () => {
     <NewsWrapper>
       <Container>
         <SectionTitle>
-          <h2>新闻动态</h2>
-          <p>了解最新的公司动态和行业资讯</p>
+          <AnimatedTitle
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={titleVariants}
+          >
+            新闻动态
+          </AnimatedTitle>
+          <AnimatedDescription
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={descriptionVariants}
+          >
+            了解最新的公司动态和行业资讯
+          </AnimatedDescription>
         </SectionTitle>
+        
         {loading ? (
           <LoadingContainer>
             <Spin size="large" />
@@ -237,38 +330,56 @@ const News: React.FC = () => {
         ) : (
           <>
             <Row gutter={[24, 24]}>
-              {news.map(item => (
+              {news.map((item, index) => (
                 <Col key={item.id} xs={24} md={8}>
-                  <Link to={`/news/${item.id}`}>
-                    <NewsCard
-                      hoverable
-                      cover={
-                        <img
-                          alt={item.title}
-                          src={item.image || '/placeholder.png'}
-                        />
-                      }
-                    >
-                      <NewsTitle>{item.title}</NewsTitle>
-                      <NewsDescription>{item.description}</NewsDescription>
-                      <NewsInfo>
-                        <span>
-                          <CalendarOutlined />
-                          {dayjs(item.createTime).format('YYYY-MM-DD')}
-                        </span>
-                        <span>
-                          <EyeOutlined />
-                          {item.views} 浏览
-                        </span>
-                      </NewsInfo>
-                    </NewsCard>
-                  </Link>
+                  <NewsCardWrapper
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.1 }}
+                    custom={index}
+                    variants={cardVariants}
+                  >
+                    <Link to={`/news/${item.id}`}>
+                      <NewsCard
+                        hoverable
+                        cover={
+                          <img
+                            alt={item.title}
+                            src={item.image || '/placeholder.png'}
+                          />
+                        }
+                      >
+                        <NewsTitle>{item.title}</NewsTitle>
+                        <NewsDescription>{item.description}</NewsDescription>
+                        <NewsInfo>
+                          <span>
+                            <CalendarOutlined />
+                            {dayjs(item.createTime).format('YYYY-MM-DD')}
+                          </span>
+                          <span>
+                            <EyeOutlined />
+                            {item.views} 浏览
+                          </span>
+                        </NewsInfo>
+                      </NewsCard>
+                    </Link>
+                  </NewsCardWrapper>
                 </Col>
               ))}
             </Row>
+            
             <div style={{ textAlign: 'center' }}>
-              <ViewMoreButton type="primary" onClick={handleViewMore}>
-                查看更多新闻
+              <ViewMoreButton
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.1 }}
+                variants={buttonVariants}
+                whileTap="tap"
+              >
+                <Button type="primary" className="btn" onClick={handleViewMore}>
+                  查看更多新闻
+                  <ArrowRightOutlined className="icon" />
+                </Button>
               </ViewMoreButton>
             </div>
           </>

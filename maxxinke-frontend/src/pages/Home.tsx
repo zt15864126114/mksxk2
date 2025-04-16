@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import Banner from '../components/home/Banner';
+import StatsSection from '../components/home/StatsSection';
+import AdvantagesSection from '../components/home/AdvantagesSection';
 import Products from '../components/home/Products';
 import News from '../components/home/News';
 import api from '../services/api';
@@ -9,6 +11,8 @@ const HomeWrapper = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
 `;
 
 const MainContent = styled.main`
@@ -45,12 +49,17 @@ const Home: React.FC = () => {
     };
 
     recordPageView();
+    
+    // 确保页面滚动到顶部
+    window.scrollTo(0, 0);
   }, []); // 空依赖数组表示只在组件挂载时执行一次
 
   return (
     <HomeWrapper>
       <MainContent>
         <Banner />
+        <StatsSection />
+        <AdvantagesSection />
         <Products />
         <News />
       </MainContent>
