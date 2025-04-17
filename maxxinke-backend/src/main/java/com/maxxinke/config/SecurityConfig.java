@@ -21,6 +21,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpMethod;
+import javax.servlet.http.HttpServletResponse;
 
 import java.util.Arrays;
 
@@ -94,16 +96,28 @@ public class SecurityConfig {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .authorizeRequests()
+                // 公开接口
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/public/**").permitAll()
-                .antMatchers("/api/messages/**").permitAll()  // 允许消息相关的所有请求
-                .antMatchers("/api/news/**").permitAll()
-                .antMatchers("/api/products/**").permitAll()
-                .antMatchers("/api/dashboard/**").permitAll()
-                .antMatchers("/api/about-us/**").permitAll()
-                .antMatchers("/api/system/**").permitAll()
-                .antMatchers("/api/product-stats/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/product/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/news/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/about-us/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/contact/**").permitAll()
+                // 需要认证的接口
+                .antMatchers(HttpMethod.POST, "/api/messages/**").authenticated()
+                .antMatchers(HttpMethod.PUT, "/api/messages/**").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/messages/**").authenticated()
+                // 需要管理员权限的接口
+                .antMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/api/news/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/api/news/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/api/news/**").hasRole("ADMIN")
                 .antMatchers("/api/admins/**").hasRole("ADMIN")
+                .antMatchers("/api/dashboard/**").hasRole("ADMIN")
+                .antMatchers("/api/system/**").hasRole("ADMIN")
                 // Swagger UI paths
                 .antMatchers("/swagger-ui/**",
                         "/swagger-resources/**",
@@ -113,7 +127,18 @@ public class SecurityConfig {
                         "/webjars/**").permitAll()
                 .anyRequest().authenticated()
             .and()
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .exceptionHandling()
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter().write("{\"message\":\"未授权访问\",\"code\":401}");
+                })
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter().write("{\"message\":\"没有权限访问\",\"code\":403}");
+                });
 
         logger.debug("Security filter chain configuration completed");
         return http.build();

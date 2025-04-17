@@ -12,6 +12,11 @@ const api = axios.create({
   timeout: 10000,
 });
 
+// 是否正在刷新token
+let isRefreshing = false;
+// 重试队列
+let requests: Function[] = [];
+
 // 请求拦截器
 api.interceptors.request.use(
   (config) => {
@@ -39,17 +44,61 @@ api.interceptors.response.use(
     console.log(`请求成功: ${response.config.url}`, response.status);
     return response.data;
   },
-  (error) => {
+  async (error) => {
     console.error('请求失败:', error);
     
-    // 处理超时错误
+    const originalRequest = error.config;
+    
+    // 处理token过期
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        // 如果正在刷新token，将请求加入队列
+        return new Promise((resolve) => {
+          requests.push(() => {
+            resolve(api(originalRequest));
+          });
+        });
+      }
+      
+      originalRequest._retry = true;
+      isRefreshing = true;
+      
+      try {
+        // 尝试刷新token
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) {
+          throw new Error('No refresh token');
+        }
+        
+        const response = await api.post('/auth/refresh', { refreshToken });
+        const { token } = response.data;
+        
+        localStorage.setItem('token', token);
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        
+        // 执行队列中的请求
+        requests.forEach(cb => cb());
+        requests = [];
+        
+        return api(originalRequest);
+      } catch (refreshError) {
+        // 刷新token失败，清除用户信息并跳转到登录页
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+    
+    // 处理其他错误
     if (error.code === 'ECONNABORTED' && error.message.includes('timeout')) {
       console.error('请求超时');
       message.error('服务器响应超时，请稍后再试');
       return Promise.reject(new Error('请求超时'));
     }
     
-    // 处理网络错误
     if (!error.response) {
       console.error('网络错误或服务器未响应');
       message.error('网络错误或服务器未响应');
@@ -57,18 +106,22 @@ api.interceptors.response.use(
     }
     
     const { response } = error;
-    // 处理常见错误
     if (response) {
-      if (response.status === 401) {
-        message.error('登录已过期，请重新登录');
-        localStorage.removeItem('token');
-        window.location.href = '/login';
-      } else if (response.status === 403) {
-        message.error('没有权限访问此资源');
-      } else if (response.status === 500) {
-        message.error('服务器错误，请稍后再试');
-      } else {
-        message.error(response.data?.message || '请求发生错误');
+      switch (response.status) {
+        case 401:
+          message.error('登录已过期，请重新登录');
+          break;
+        case 403:
+          message.error('没有权限访问此资源');
+          break;
+        case 404:
+          message.error('请求的资源不存在');
+          break;
+        case 500:
+          message.error('服务器错误，请稍后再试');
+          break;
+        default:
+          message.error(response.data?.message || '请求发生错误');
       }
     }
     
@@ -163,7 +216,7 @@ export const productsAPI = {
   updateProduct: (id: number, data: FormData) => 
     request<Product>({
       url: `/products/${id}`,
-      method: 'POST',
+      method: 'PUT',
       data,
       headers: {
         'Content-Type': 'multipart/form-data',
