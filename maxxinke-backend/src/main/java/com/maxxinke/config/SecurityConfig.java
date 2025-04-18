@@ -100,12 +100,17 @@ public class SecurityConfig {
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/public/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/product-stats/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/product/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/news/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/about-us/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/contact/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/messages/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/system/config/contact/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/dashboard/visits/record/**").permitAll()
+
                 // 需要认证的接口
-                .antMatchers(HttpMethod.POST, "/api/messages/**").authenticated()
+                .antMatchers(HttpMethod.GET, "/api/messages/**").permitAll()
                 .antMatchers(HttpMethod.PUT, "/api/messages/**").authenticated()
                 .antMatchers(HttpMethod.DELETE, "/api/messages/**").authenticated()
                 // 需要管理员权限的接口
