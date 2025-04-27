@@ -38,11 +38,7 @@ const BannerWrapper = styled.div`
       left: 0;
       right: 0;
       bottom: 0;
-      background: linear-gradient(
-        135deg, 
-        rgba(0, 21, 41, 0.7) 0%, 
-        rgba(24, 144, 255, 0.4) 100%
-      );
+      background: none; /* 移除背景渐变色 */
     }
   }
   
@@ -250,7 +246,7 @@ const Banner: React.FC = () => {
   const banners = [
     {
       id: 1,
-      image: '/images/banner/water-treatment-plant.jpg',
+      image: '/images/banner/newwater-treatment-plant.jpg',
       title: "专业水处理技术领导者",
       description: "专注水处理产品研发与制造，为工业与市政客户提供全方位水处理解决方案，引领行业技术创新。",
       buttonText: "探索产品系列",
@@ -258,7 +254,7 @@ const Banner: React.FC = () => {
     },
     {
       id: 2,
-      image: '/images/banner/industrial-water.jpg',
+      image: '/images/banner/newengineers.jpg',
       title: "创新环保技术",
       description: "以创新科技助力环保事业，打造绿色可持续发展，为水资源保护和环境改善贡献力量。",
       buttonText: "了解环保技术",
@@ -266,7 +262,7 @@ const Banner: React.FC = () => {
     },
     {
       id: 3,
-      image: '/images/banner/engineers.jpg',
+      image: '/images/banner/newndustrial-water.jpg',
       title: "优质服务保障",
       description: "致力于提供高品质的水处理产品和水泥外加剂解决方案，以先进技术和优质服务为客户创造价值。",
       buttonText: "联系我们",

@@ -367,7 +367,6 @@ const Contact: React.FC = () => {
                     </div>
                     <div className="contact-content">
                       <div className="contact-label">电话</div>
-                      <div className="contact-value">{contactInfo?.tel}</div>
                       <div className="contact-value">{contactInfo?.mobile}</div>
                     </div>
                   </div>
@@ -379,7 +378,6 @@ const Contact: React.FC = () => {
                     <div className="contact-content">
                       <div className="contact-label">邮箱</div>
                       <div className="contact-value">{contactInfo?.email}</div>
-                      <div className="contact-value">{contactInfo?.serviceEmail}</div>
                     </div>
                   </div>
                   
@@ -390,7 +388,6 @@ const Contact: React.FC = () => {
                     <div className="contact-content">
                       <div className="contact-label">地址</div>
                       <div className="contact-value">{contactInfo?.address}</div>
-                      <div className="contact-value">邮编：{contactInfo?.postcode}</div>
                     </div>
                   </div>
                   
