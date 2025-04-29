@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Row, Col } from 'antd';
+import { getContactInfo } from '../../services/systemService';
+import type { ContactInfo } from '../../services/systemService';
 
 const FooterWrapper = styled.footer`
   background: #001529;
@@ -83,6 +85,32 @@ const StyledLink = styled(Link)`
 `;
 
 const Footer: React.FC = () => {
+  const [contactInfo, setContactInfo] = useState<ContactInfo>({
+    tel: '',
+    mobile: '',
+    email: '',
+    serviceEmail: '',
+    address: '',
+    postcode: '',
+    website: '',
+    wechat: ''
+  });
+  
+  useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        console.log('Footer组件：开始获取联系方式数据');
+        const data = await getContactInfo();
+        console.log('Footer组件：获取到联系方式数据', data);
+        setContactInfo(data);
+      } catch (error) {
+        console.error('Footer组件：获取联系方式失败:', error);
+      }
+    };
+    
+    fetchContactInfo();
+  }, []);
+
   const quickLinks = [
     { title: '产品中心', path: '/products' },
     { title: '新闻动态', path: '/news' },
@@ -106,15 +134,23 @@ const Footer: React.FC = () => {
           <Col xs={24} sm={12} md={8}>
             <Section>
               <Title>联系方式</Title>
-              <ContactInfo>
-                <span>电话：XXXXXXXXXXXXX</span>
-              </ContactInfo>
-              <ContactInfo>
-                <span>邮箱：130141069@qq.com</span>
-              </ContactInfo>
-              <ContactInfo>
-                <span>地址：XXXXXXXXXXXXX</span>
-              </ContactInfo>
+            
+              {contactInfo.mobile && (
+                <ContactInfo>
+                  <span>电话：{contactInfo.mobile}</span>
+                </ContactInfo>
+              )}
+              {contactInfo.email && (
+                <ContactInfo>
+                  <span>邮箱：{contactInfo.email}</span>
+                </ContactInfo>
+              )}
+              {contactInfo.address && (
+                <ContactInfo>
+                  <span>地址：{contactInfo.address}</span>
+                </ContactInfo>
+              )}
+            
             </Section>
           </Col>
           
@@ -145,3 +181,4 @@ const Footer: React.FC = () => {
 };
 
 export default Footer; 
+

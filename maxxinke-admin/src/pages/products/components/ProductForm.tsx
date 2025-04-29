@@ -202,7 +202,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
       <Form.Item
         name="application"
         label="应用领域"
-        rules={[{ required: true, message: '请输入应用领域' }]}
+        rules={[{ required: false, message: '请输入应用领域' }]}
       >
         <Input.TextArea rows={4} placeholder="请输入应用领域" />
       </Form.Item>
