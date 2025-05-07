@@ -4,7 +4,7 @@ import type { Product, ProductListParams, ProductSpecification } from './product
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api';
 
-console.log('API服务初始化, baseURL:', API_BASE_URL);
+// console.log('API服务初始化, baseURL:', API_BASE_URL);
 
 // 创建axios实例
 const api = axios.create({
@@ -20,11 +20,11 @@ let requests: Function[] = [];
 // 请求拦截器
 api.interceptors.request.use(
   (config) => {
-    console.log(`发送请求: ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
-    console.log('请求配置:', {
-      headers: config.headers,
-      data: config.data,
-    });
+    // console.log(`发送请求: ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
+    // console.log('请求配置:', {
+    //   headers: config.headers,
+    //   data: config.data,
+    // });
     
     const token = localStorage.getItem('token');
     if (token) {
@@ -41,7 +41,7 @@ api.interceptors.request.use(
 // 响应拦截器
 api.interceptors.response.use(
   (response) => {
-    console.log(`请求成功: ${response.config.url}`, response.status);
+    // console.log(`请求成功: ${response.config.url}`, response.status);
     return response.data;
   },
   async (error) => {
@@ -136,7 +136,7 @@ const callApi = async <T>(apiFunc: () => Promise<T>, fallback: T | null = null):
   } catch (error) {
     console.error('API调用失败:', error);
     if (fallback !== null) {
-      console.log('使用备用数据', fallback);
+      // console.log('使用备用数据', fallback);
       return fallback as T;
     }
     throw error;

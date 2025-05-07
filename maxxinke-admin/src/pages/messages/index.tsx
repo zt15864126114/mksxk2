@@ -21,7 +21,7 @@ const MessagesPage: React.FC = () => {
     try {
       setLoading(true);
       const response = await messageService.getMessages({ page, size });
-      console.log('获取到的消息数据:', response);
+      // console.log('获取到的消息数据:', response);
       if (response && response.data && Array.isArray(response.data.content)) {
         setMessages(response.data.content);
         setTotal(response.total);

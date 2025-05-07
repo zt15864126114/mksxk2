@@ -109,10 +109,10 @@ const ProductForm: React.FC<ProductFormProps> = ({
       if (fileList.length > 0 && fileList[0].originFileObj) {
         // 直接将文件添加到 FormData，不使用 'file' 字段名
         formData.append('image', fileList[0].originFileObj);
-        console.log('文件对象:', fileList[0].originFileObj);
+        // console.log('文件对象:', fileList[0].originFileObj);
       }
 
-      console.log('提交的表单数据:', Object.fromEntries(formData.entries()));
+      // console.log('提交的表单数据:', Object.fromEntries(formData.entries()));
       await onFinish(formData);
     } catch (error) {
       console.error('保存失败:', error);

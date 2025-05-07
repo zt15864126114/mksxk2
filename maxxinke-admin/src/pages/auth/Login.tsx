@@ -20,15 +20,15 @@ const Login = () => {
   const state = location.state as LocationState;
   const from = state?.from?.pathname || '/dashboard';
   
-  console.log('登录页面加载，目标重定向路径:', from);
+  // console.log('登录页面加载，目标重定向路径:', from);
 
   const onFinish = async (values: any) => {
     try {
-      console.log('登录表单提交:', values);
+      // console.log('登录表单提交:', values);
       const { username, password } = values;
       await login(username, password);
       message.success('登录成功');
-      console.log('登录成功，即将跳转到:', from);
+      // console.log('登录成功，即将跳转到:', from);
       
       // 短暂延迟后跳转，确保登录状态已经保存
       setTimeout(() => {

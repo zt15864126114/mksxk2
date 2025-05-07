@@ -60,10 +60,10 @@ const NewsForm: React.FC<NewsFormProps> = ({
       // 如果有文件，添加到 FormData
       if (fileList.length > 0 && fileList[0].originFileObj) {
         formData.append('image', fileList[0].originFileObj);
-        console.log('文件对象:', fileList[0].originFileObj);
+        // console.log('文件对象:', fileList[0].originFileObj);
       }
 
-      console.log('提交的表单数据:', Object.fromEntries(formData.entries()));
+      // console.log('提交的表单数据:', Object.fromEntries(formData.entries()));
       await onFinish(formData);
     } catch (error) {
       console.error('保存失败:', error);

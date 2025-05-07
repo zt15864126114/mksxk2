@@ -20,7 +20,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ open, onClose
       // 在实际环境中应该从/api/admins/me获取
       const adminId = 1; // 假设管理员ID是1
       
-      console.log('开始修改密码，管理员ID:', adminId);
+      // console.log('开始修改密码，管理员ID:', adminId);
       
       // 调用修改密码API
       // 注意：这里需要修改后端API，接受旧密码参数并进行验证

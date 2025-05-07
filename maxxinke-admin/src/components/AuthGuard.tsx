@@ -23,7 +23,7 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
 
   // 如果未认证，重定向到登录页
   if (!isAuthenticated) {
-    console.log('未认证，重定向到登录页');
+    // console.log('未认证，重定向到登录页');
     // 将当前URL保存在state中，以便登录后返回
     return <Navigate to="/login" state={{ from: location }} replace />;
   }

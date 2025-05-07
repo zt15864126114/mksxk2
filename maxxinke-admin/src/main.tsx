@@ -22,7 +22,7 @@ window.addEventListener('unhandledrejection', (event) => {
 });
 
 // 调试localStorage状态
-console.log('应用启动，localStorage token状态:', localStorage.getItem('token'));
+// console.log('应用启动，localStorage token状态:', localStorage.getItem('token'));
 
 // 渲染应用
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -35,7 +35,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         },
       }}
     >
-      <BrowserRouter>
+      <BrowserRouter basename="/admin">
         <App />
       </BrowserRouter>
     </ConfigProvider>
