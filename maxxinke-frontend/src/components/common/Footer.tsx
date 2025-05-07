@@ -68,7 +68,7 @@ const Footer: React.FC = () => {
     const fetchContactInfo = async () => {
       try {
         setLoading(true);
-        console.log('Footer组件：开始获取联系方式数据');
+        // console.log('Footer组件：开始获取联系方式数据');
         
         // 首先检查API连接
         try {
@@ -79,7 +79,7 @@ const Footer: React.FC = () => {
         }
         
         const data = await getContactInfo();
-        console.log('Footer组件：获取到联系方式数据', data);
+        // console.log('Footer组件：获取到联系方式数据', data);
         
         // 验证数据是否为空对象或所有字段为空字符串
         const isEmptyData = !data || Object.values(data).every(val => val === '');

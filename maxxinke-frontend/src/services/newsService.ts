@@ -52,10 +52,10 @@ export const newsService = {
     // 如果有关键词，使用title参数进行标题搜索
     if (keyword) {
       adjustedParams.title = keyword; // 使用title参数进行标题搜索
-      console.log('按标题搜索新闻:', keyword);
+      // console.log('按标题搜索新闻:', keyword);
     }
     
-    console.log('新闻搜索参数:', adjustedParams);
+    // console.log('新闻搜索参数:', adjustedParams);
     
     try {
       const response = await api.get('/news', {
@@ -64,7 +64,7 @@ export const newsService = {
       
       // 如果后端搜索不工作，尝试在前端进行过滤
       if (keyword && response && response.content && response.content.length > 0) {
-        console.log('后端返回新闻数量:', response.content.length);
+        // console.log('后端返回新闻数量:', response.content.length);
         
         // 检查结果中是否包含搜索词，如果不包含，则在前端进行过滤
         const titleMatches = response.content.filter(
@@ -72,7 +72,7 @@ export const newsService = {
         );
         
         if (titleMatches.length < response.content.length) {
-          console.log('在前端执行标题过滤，找到匹配新闻:', titleMatches.length);
+          // console.log('在前端执行标题过滤，找到匹配新闻:', titleMatches.length);
           
           // 创建新的响应对象
           const filteredResponse = {
@@ -113,7 +113,7 @@ export const newsService = {
   getNewsTypes: async (): Promise<NewsType[]> => {
     try {
       // 直接从新闻列表中提取类型
-      console.log('从新闻列表中提取新闻类型...');
+      // console.log('从新闻列表中提取新闻类型...');
       const response = await api.get<NewsListResponse>('/news', { 
         params: { 
           page: 0, 
@@ -135,7 +135,7 @@ export const newsService = {
           name: type
         }));
         
-        console.log('成功从新闻列表提取类型:', typeArray);
+        // console.log('成功从新闻列表提取类型:', typeArray);
         return typeArray;
       } else {
         console.warn('新闻列表为空，无法提取类型');
@@ -186,7 +186,7 @@ export const newsService = {
   incrementNewsViews: async (id: number): Promise<void> => {
     try {
       await api.post(`/news/${id}/view`);
-      console.log(`新闻 ID:${id} 浏览量+1`);
+      // console.log(`新闻 ID:${id} 浏览量+1`);
     } catch (error) {
       console.error('增加新闻浏览量失败:', error);
       // 静默失败，不影响用户体验

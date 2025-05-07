@@ -35,7 +35,7 @@ api.interceptors.request.use(
       config.headers['X-Frontend-Request'] = 'true';
     }
     
-    console.log('API Request:', config.method?.toUpperCase(), config.url);
+    // console.log('API Request:', config.method?.toUpperCase(), config.url);
     return config;
   },
   (error) => {
@@ -48,7 +48,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => {
     // 直接返回响应数据
-    console.log('API Response:', response.config.method?.toUpperCase(), response.config.url, 'Status:', response.status);
+    // console.log('API Response:', response.config.method?.toUpperCase(), response.config.url, 'Status:', response.status);
     return response.data;
   },
   (error) => {

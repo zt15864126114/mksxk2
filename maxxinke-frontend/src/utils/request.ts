@@ -15,7 +15,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
   config => {
     // 在发送请求之前做些什么
-    console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`);
+    // console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`);
     
     // 从localStorage获取token
     const token = localStorage.getItem('token');
@@ -36,7 +36,7 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   response => {
     // 对响应数据做点什么
-    console.log(`[API Response] ${response.config.method?.toUpperCase()} ${response.config.url} - Status: ${response.status}`);
+    // console.log(`[API Response] ${response.config.method?.toUpperCase()} ${response.config.url} - Status: ${response.status}`);
     return response;
   },
   error => {
@@ -96,6 +96,6 @@ export const request = {
 };
 
 // 日志初始化信息
-console.log('[API] Request utility initialized with base URL:', config.apiBaseUrl);
+// console.log('[API] Request utility initialized with base URL:', config.apiBaseUrl);
 
 export default request;

@@ -99,9 +99,9 @@ const Footer: React.FC = () => {
   useEffect(() => {
     const fetchContactInfo = async () => {
       try {
-        console.log('Footer组件：开始获取联系方式数据');
+        // console.log('Footer组件：开始获取联系方式数据');
         const data = await getContactInfo();
-        console.log('Footer组件：获取到联系方式数据', data);
+        // console.log('Footer组件：获取到联系方式数据', data);
         setContactInfo(data);
       } catch (error) {
         console.error('Footer组件：获取联系方式失败:', error);

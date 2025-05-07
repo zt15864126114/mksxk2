@@ -68,7 +68,7 @@ export const productService = {
       adjustedParams.keyword = keyword;
     }
     
-    console.log('产品搜索参数:', adjustedParams);
+    // console.log('产品搜索参数:', adjustedParams);
     
     try {
       const response = await api.get('/products', {
@@ -77,8 +77,8 @@ export const productService = {
       
       // 如果后端搜索不工作，尝试在前端进行过滤
       if (name && response && response.content && response.content.length > 0) {
-        console.log('后端返回产品数量:', response.content.length);
-        console.log('尝试前端过滤...');
+        // console.log('后端返回产品数量:', response.content.length);
+        // console.log('尝试前端过滤...');
         
         // 检查结果是否包含搜索词，如果全部结果不包含搜索词，可能需要前端过滤
         const nameMatches = response.content.filter(
@@ -87,7 +87,7 @@ export const productService = {
         
         // 如果后端没有过滤或过滤不正确，在前端应用过滤
         if (nameMatches.length < response.content.length) {
-          console.log('应用前端过滤，找到匹配产品:', nameMatches.length);
+          // console.log('应用前端过滤，找到匹配产品:', nameMatches.length);
           
           // 创建修正后的响应对象
           const filteredResponse = {

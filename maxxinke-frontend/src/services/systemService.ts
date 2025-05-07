@@ -22,9 +22,9 @@ export interface ContactInfo {
 export const checkApiConnection = async (): Promise<void> => {
   try {
     const url = '/system/config/contact';
-    console.log(`尝试连接API: ${url}`);
+    // console.log(`尝试连接API: ${url}`);
     const response = await api.get(url);
-    console.log('API连接成功，响应:', response);
+    // console.log('API连接成功，响应:', response);
     
     // 验证响应是否符合预期
     if (!response || typeof response !== 'object') {
@@ -42,18 +42,18 @@ export const checkApiConnection = async (): Promise<void> => {
  */
 export const getContactInfo = async (): Promise<ContactInfo> => {
   try {
-    console.log('开始获取联系方式数据');
+    // console.log('开始获取联系方式数据');
     
     // 构造更详细的请求信息，帮助调试
-    console.log('请求详情:', {
-      endpoint: '/system/config/contact',
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    });
-    
+    // console.log('请求详情:', {
+    //   endpoint: '/system/config/contact',
+    //   method: 'GET',
+    //   headers: { 'Content-Type': 'application/json' }
+    // });
+    //
     const response = await api.get<any>('/system/config/contact');
     
-    console.log('获取联系方式数据成功，原始响应:', response);
+    // console.log('获取联系方式数据成功，原始响应:', response);
     
     // 验证响应格式
     if (!response || typeof response !== 'object') {
@@ -73,7 +73,7 @@ export const getContactInfo = async (): Promise<ContactInfo> => {
       wechat: response.wechat || ''
     };
     
-    console.log('格式化后的联系方式数据:', contactInfo);
+    // console.log('格式化后的联系方式数据:', contactInfo);
     
     // 验证数据是否有效
     const hasValidData = Object.values(contactInfo).some(val => val !== '');
@@ -105,9 +105,9 @@ export const getContactInfo = async (): Promise<ContactInfo> => {
  */
 export const updateContactInfo = async (contactInfo: ContactInfo): Promise<any> => {
   try {
-    console.log('更新联系方式数据:', contactInfo);
+    // console.log('更新联系方式数据:', contactInfo);
     const response = await api.put<any>('/system/config/contact', contactInfo);
-    console.log('更新联系方式成功:', response);
+    // console.log('更新联系方式成功:', response);
     return response;
   } catch (error) {
     console.error('更新联系方式失败:', error);

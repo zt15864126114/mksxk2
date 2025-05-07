@@ -24,8 +24,8 @@ interface Config {
 // 环境变量优先级: 环境变量 > 配置文件
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://47.104.65.146:3002';
 
-console.log('应用配置初始化中...');
-console.log('当前API基础地址:', API_BASE_URL);
+// console.log('应用配置初始化中...');
+// console.log('当前API基础地址:', API_BASE_URL);
 
 export const config: Config = {
   // API基础URL
